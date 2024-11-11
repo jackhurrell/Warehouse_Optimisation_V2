@@ -140,7 +140,7 @@ Public Class Stock_Wizard
                 For Each warehouse_id In optimisation_order
                     'Debug.WriteLine("Optimising warehouse " & warehouse_id)
                     'Dim warehouse_inputs_to_optimise = Warehouse_group_to_optimise.warehouse_inputs(warehouse_id_to_pos_dict(warehouse_id))
-                    Dim new_points = two_var_gradient_descent(Warehouse_group_to_optimise.warehouse_inputs(warehouse_id_to_pos_dict(warehouse_id)), iteration_params)
+                    Dim new_points = two_var_gradient_descent(Warehouse_group_to_optimise.warehouse_inputs(warehouse_id_to_pos_dict(warehouse_id)), iteration_params, annealing_value:=i)
                     reorder_points(warehouse_id).Add(new_points.Item1)
                     reorder_amounts(warehouse_id).Add(new_points.Item2)
                 Next
@@ -159,7 +159,7 @@ Public Class Stock_Wizard
             For i As Integer = 0 To iteration_params.num_iterations_for_round - 1
                 For Each warehouse_id In optimisation_order
                     'Dim warehouse_inputs_to_optimise = Warehouse_group_to_optimise.warehouse_inputs(warehouse_id_to_pos_dict(warehouse_id))
-                    Dim new_points = one_var_gradient_descent(Warehouse_group_to_optimise.warehouse_inputs(warehouse_id_to_pos_dict(warehouse_id)), iteration_params, annealing:=True, annealing_value:=i)
+                    Dim new_points = one_var_gradient_descent(Warehouse_group_to_optimise.warehouse_inputs(warehouse_id_to_pos_dict(warehouse_id)), iteration_params, annealing_value:=i)
                     reorder_points(warehouse_id).Add(new_points.Item1)
                     reorder_amounts(warehouse_id).Add(new_points.Item2)
                 Next
@@ -190,7 +190,8 @@ Public Class Stock_Wizard
         Dim gradient = numerical_gradient_1d(warehouse_inputs, iteration_params, current_reorder_point, rounded_reorder_amount, iteration_params.delta_point * current_reorder_point)
 
         Dim updated_reorder_point As Double
-        If annealing Then
+
+        If iteration_params.annealing Then
             Dim alpha_this_iteration = iteration_params.alpha_point / (1 + (Beta * annealing_value))
             updated_reorder_point = current_reorder_point - alpha_this_iteration * gradient
         Else
@@ -244,7 +245,7 @@ Public Class Stock_Wizard
         Dim alpha_amount = iteration_params.alpha_amount
 
 
-        If annealing Then
+        If iteration_params.annealing Then
             alpha_point = alpha_point / (1 + (Beta * annealing_value))
             alpha_amount = alpha_amount / (1 + (Beta * annealing_value))
         End If
