@@ -9,8 +9,9 @@
     Public delta_amount As Double
     Public tolerance As Double
     Public base_penalty As Double
+    Public annealing As Boolean
 
-    Public Sub New(num_iterations_for_round As Integer, number_simulation As Integer, number_days As Integer, alpha_point As Double, alpha_amount As Double, Optional delta_point As Double = 0.05, Optional delta_amount As Double = 0.05, Optional num_var_to_optimise As Integer = 2, Optional tolerance As Double = 0.0001, Optional base_penalty As Double = 1000)
+    Public Sub New(num_iterations_for_round As Integer, number_simulation As Integer, number_days As Integer, alpha_point As Double, alpha_amount As Double, Optional delta_point As Double = 0.05, Optional delta_amount As Double = 0.05, Optional num_var_to_optimise As Integer = 2, Optional tolerance As Double = 0.0001, Optional base_penalty As Double = 1000, Optional annealing As Boolean = False)
         Me.number_simulations = number_simulation
         Me.number_days = number_days
         Me.alpha_point = alpha_point
@@ -21,9 +22,8 @@
         Me.num_iterations_for_round = num_iterations_for_round
         Me.base_penalty = base_penalty
         Me.tolerance = tolerance
+        Me.annealing = annealing
 
     End Sub
-
-
 
 End Class
