@@ -116,7 +116,7 @@ Public Class Main_form
 
             Dim FileName = warehouse.warehouse_id & "_SIMULATION_OUTPUT.csv"
             Dim CSVString As String = $"Warehouse {warehouse.warehouse_id} located at {WarehouseLocations(warehouse.warehouse_id)}" & vbCrLf
-            CSVString += "Day, Beginning Day Inventory, Demand, End Day Inventory, Lost Sales, Reorder Confirmed, lead time, Reorder recieved,Reorder Amount" & vbCrLf
+            CSVString += "Day, Beginning Day Inventory, Demand, End Day Inventory, Lost Sales, Reorder Confirmed, Reordered From, lead time, Reorder recieved,Reorder Amount" & vbCrLf
 
             ''transforms the reorder information into a dictionary 
             Dim Reorder_day_dictionary As Dictionary(Of Integer, Reorder_report) = New Dictionary(Of Integer, Reorder_report)
@@ -135,9 +135,9 @@ Public Class Main_form
                 Dim reorder_string_two As String = ""
 
                 If Reorder_day_dictionary.Keys.Contains(day) Then
-                    reorder_string_one = "Yes, " & Reorder_day_dictionary(day).lead_time & ","
+                    reorder_string_one = "Yes, " & Reorder_day_dictionary(day).reordered_from & "," & Reorder_day_dictionary(day).lead_time & ","
                 Else
-                    reorder_string_one = "No, N/A,"
+                    reorder_string_one = "No, N/A, N/A,"
                 End If
 
                 If Reorder_arrived_dictionary.Keys.Contains(day) Then
