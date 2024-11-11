@@ -1,12 +1,11 @@
 ﻿Imports Warehouse_Optimisation
 Imports Warehouse_Optimisation.Stock_Wizard
 
-
 Public Class RunStockWizardForm
 
     Dim stockWizard As Stock_Wizard
     Dim IterationInputs As List(Of Stock_wizard_iteration_inputs)
-    Public Sub New(warehouseInputs As List(Of Warehouse_inputs), reorderRelations As List(Of (Integer, Integer, Reorder_inputs)), stockWizardIterationinputs As List(Of Stock_wizard_iteration_inputs), desiredServiceLevels As Dictionary(Of Integer, Double), optimisationType As OptimisedFor)
+    Public Sub New(warehouseInputs As List(Of Warehouse_inputs), reorderRelations As List(Of (Integer, Integer, Reorder_inputs)), stockWizardIterationinputs As List(Of Stock_wizard_iteration_inputs), desiredServiceLevels As Dictionary(Of Integer, Double), optimisationType As OptimisedFor, Optional LostSalesPenaltyFactor As Double = 1)
 
         ' This call is required by the designer.
         InitializeComponent()
@@ -16,7 +15,7 @@ Public Class RunStockWizardForm
         Dim ProgressCallback As ProgressDelegate = Sub(progress)
                                                        Update_progress_bar(progress)
                                                    End Sub
-        Me.stockWizard = New Stock_Wizard(warehouseInputs, reorderRelations, progressCallback:=ProgressCallback, desired_service_levels:=desiredServiceLevels, CostFunction:=optimisationType)
+        Me.stockWizard = New Stock_Wizard(warehouseInputs, reorderRelations, progressCallback:=ProgressCallback, desired_service_levels:=desiredServiceLevels, CostFunction:=optimisationType, LostSalesPenaltyFactor:=LostSalesPenaltyFactor)
     End Sub
 
 
@@ -25,7 +24,7 @@ Public Class RunStockWizardForm
         Dim stockWizardResults As (Dictionary(Of Integer, List(Of Double)), Dictionary(Of Integer, List(Of Double))) = Nothing
 
         Task.Run(Sub()
-                     stockWizardResults = Me.stockWizard.Run_stock_wizard(3, Me.IterationInputs)
+                     stockWizardResults = Me.stockWizard.Run_stock_wizard(Me.IterationInputs)
                      StockWizardProgressBar.Invoke(New Action(Sub()
 
                                                                   Dim resultsForm As New StockRecomendationsForm(stockWizardResults, stockWizard.getWarehouseGroup())

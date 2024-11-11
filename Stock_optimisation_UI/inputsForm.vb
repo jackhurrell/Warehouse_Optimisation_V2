@@ -33,7 +33,7 @@ Public Class inputsForm
         ''''THIS SECTION NEEDS To BE FILLED OUT WHEN USED - CONTAINS PRIVATE INFORMATION
         '''"' DELETE THIS INFORMATION BEFORE PUSHING TO A PUBLIC REPO
         Me.googleAPIKey = "###"
-        Dim DatabasePassword As String = "###S"
+        Dim DatabasePassword As String = "###"
         '''' END PRIVATE INFORMATION
         '''
 

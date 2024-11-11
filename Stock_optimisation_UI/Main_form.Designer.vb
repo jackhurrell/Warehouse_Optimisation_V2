@@ -36,6 +36,7 @@ Partial Class Main_form
         NetworkIDInputTextBox = New TextBox()
         lblInputsTitle = New Label()
         MonteBox = New GroupBox()
+        CSVDumpCheckbox = New CheckBox()
         Label1 = New Label()
         NumSimulationDaysTextBox = New TextBox()
         lblMonteTitle = New Label()
@@ -46,7 +47,8 @@ Partial Class Main_form
         CostFunctionComboBox = New ComboBox()
         OneVarRadioButton = New RadioButton()
         TwoVarRadioButton = New RadioButton()
-        CSVDumpCheckbox = New CheckBox()
+        LostSalesPenaltyFactorLabel = New Label()
+        LostSalesPenaltyFactorTextBox = New TextBox()
         InputsBox.SuspendLayout()
         MonteBox.SuspendLayout()
         StockWizardBox.SuspendLayout()
@@ -201,6 +203,17 @@ Partial Class Main_form
         MonteBox.TabIndex = 8
         MonteBox.TabStop = False
         ' 
+        ' CSVDumpCheckbox
+        ' 
+        CSVDumpCheckbox.AutoSize = True
+        CSVDumpCheckbox.Font = New Font("Arial", 9F, FontStyle.Regular, GraphicsUnit.Point)
+        CSVDumpCheckbox.Location = New Point(8, 131)
+        CSVDumpCheckbox.Name = "CSVDumpCheckbox"
+        CSVDumpCheckbox.Size = New Size(217, 19)
+        CSVDumpCheckbox.TabIndex = 7
+        CSVDumpCheckbox.Text = "Output Final Simulation to CSV File"
+        CSVDumpCheckbox.UseVisualStyleBackColor = True
+        ' 
         ' Label1
         ' 
         Label1.AutoSize = True
@@ -249,6 +262,8 @@ Partial Class Main_form
         ' 
         ' StockWizardBox
         ' 
+        StockWizardBox.Controls.Add(LostSalesPenaltyFactorTextBox)
+        StockWizardBox.Controls.Add(LostSalesPenaltyFactorLabel)
         StockWizardBox.Controls.Add(Label2)
         StockWizardBox.Controls.Add(CostFunctionComboBox)
         StockWizardBox.Controls.Add(OneVarRadioButton)
@@ -304,16 +319,23 @@ Partial Class Main_form
         TwoVarRadioButton.Text = "Optimise Reorder Points and Amount"
         TwoVarRadioButton.UseVisualStyleBackColor = True
         ' 
-        ' CSVDumpCheckbox
+        ' LostSalesPenaltyFactorLabel
         ' 
-        CSVDumpCheckbox.AutoSize = True
-        CSVDumpCheckbox.Font = New Font("Arial", 9F, FontStyle.Regular, GraphicsUnit.Point)
-        CSVDumpCheckbox.Location = New Point(8, 131)
-        CSVDumpCheckbox.Name = "CSVDumpCheckbox"
-        CSVDumpCheckbox.Size = New Size(217, 19)
-        CSVDumpCheckbox.TabIndex = 7
-        CSVDumpCheckbox.Text = "Output Final Simulation to CSV File"
-        CSVDumpCheckbox.UseVisualStyleBackColor = True
+        LostSalesPenaltyFactorLabel.AutoSize = True
+        LostSalesPenaltyFactorLabel.Font = New Font("Arial", 9F, FontStyle.Regular, GraphicsUnit.Point)
+        LostSalesPenaltyFactorLabel.Location = New Point(6, 213)
+        LostSalesPenaltyFactorLabel.Name = "LostSalesPenaltyFactorLabel"
+        LostSalesPenaltyFactorLabel.Size = New Size(146, 15)
+        LostSalesPenaltyFactorLabel.TabIndex = 10
+        LostSalesPenaltyFactorLabel.Text = "Lost Sales Penalty Factor"
+        ' 
+        ' LostSalesPenaltyFactorTextBox
+        ' 
+        LostSalesPenaltyFactorTextBox.Font = New Font("Arial", 9F, FontStyle.Regular, GraphicsUnit.Point)
+        LostSalesPenaltyFactorTextBox.Location = New Point(158, 210)
+        LostSalesPenaltyFactorTextBox.Name = "LostSalesPenaltyFactorTextBox"
+        LostSalesPenaltyFactorTextBox.Size = New Size(64, 21)
+        LostSalesPenaltyFactorTextBox.TabIndex = 11
         ' 
         ' Main_form
         ' 
@@ -361,5 +383,7 @@ Partial Class Main_form
     Friend WithEvents CostFunctionComboBox As ComboBox
     Friend WithEvents Label2 As Label
     Friend WithEvents CSVDumpCheckbox As CheckBox
+    Friend WithEvents LostSalesPenaltyFactorTextBox As TextBox
+    Friend WithEvents LostSalesPenaltyFactorLabel As Label
 
 End Class

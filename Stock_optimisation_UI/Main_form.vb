@@ -17,6 +17,12 @@ Public Class Main_form
     Dim ReorderRelations As List(Of (Integer, Integer, Reorder_inputs))
     Dim WarehouseLocations As Dictionary(Of Integer, String)
 
+
+    Private Sub Main_form_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        LostSalesPenaltyFactorLabel.Visible = False
+        LostSalesPenaltyFactorTextBox.Visible = False
+    End Sub
+
     Private Sub btnOpenInputs_Click(sender As Object, e As EventArgs) Handles btnOpenInputs.Click
 
 
@@ -30,7 +36,6 @@ Public Class Main_form
             MessageBox.Show("Please select at least one of the SKU options")
             Exit Sub
         End If
-
 
         Dim NewNetwork = CreateNetworkCheckBox.Checked
         Dim NewSKU = CreateNewSkuCheckBox.Checked
@@ -174,6 +179,18 @@ Public Class Main_form
                 Exit Sub
         End Select
 
+
+        Dim lostSalesPenaltyFactor As Double = 1 '''Sets default value to 1 - ie no additional penalty
+
+        If LostSalesPenaltyFactorTextBox.Visible And (Not LostSalesPenaltyFactorTextBox.Text = "") Then
+            Try
+                lostSalesPenaltyFactor = Convert.ToDouble(LostSalesPenaltyFactorTextBox.Text)
+            Catch exp As Exception
+                MessageBox.Show("Please enter a valid number in the lost sales penalty factor box - if left blank the penalty will default to 1")
+                Exit Sub
+            End Try
+        End If
+
         Dim requiredServiceLevels As Dictionary(Of Integer, Double) = Nothing
 
         If OptimisationType = OptimisedFor.CostWithPenalty Or OptimisationType = OptimisedFor.CostsWithPenaltyAndLostSales Then
@@ -222,7 +239,7 @@ Public Class Main_form
             Exit Sub
         End If
 
-        Dim stockwizardform As New RunStockWizardForm(Me.WarehouseInputs, Me.ReorderRelations, StockWizardIterationInputs, requiredServiceLevels, OptimisationType)
+        Dim stockwizardform As New RunStockWizardForm(Me.WarehouseInputs, Me.ReorderRelations, StockWizardIterationInputs, requiredServiceLevels, OptimisationType, lostSalesPenaltyFactor)
 
         btnStockWizard.Enabled = False
         stockwizardform.RunStockWizard()
@@ -254,5 +271,14 @@ Public Class Main_form
         End If
     End Sub
 
-End Class
+    Private Sub CostFunctionComboBox_SelectedIndexChanged(sender As Object, e As EventArgs) Handles CostFunctionComboBox.SelectedIndexChanged
+        If CostFunctionComboBox.SelectedItem = "Balance Costs With Opportunity Costs" Or CostFunctionComboBox.SelectedItem = "Balance Opportunity Costs with a Min SL" Then
+            LostSalesPenaltyFactorLabel.Visible = True
+            LostSalesPenaltyFactorTextBox.Visible = True
+        Else
+            LostSalesPenaltyFactorLabel.Visible = False
+            LostSalesPenaltyFactorTextBox.Visible = False
+        End If
+    End Sub
 
+End Class
