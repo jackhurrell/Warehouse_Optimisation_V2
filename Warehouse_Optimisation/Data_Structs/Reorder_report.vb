@@ -17,12 +17,13 @@ Public Structure Reorder_report
     Public distributor_inventory As Integer
     Public reorder_amount As Integer
     Public reorder_cost As Double
+    Public lead_time As Integer
     Public is_valid As Integer 'This exists to tell if the report is valid or just empty
 
     Public Sub New(warehouse_id As Integer, reorder_day As Integer,
                    reordered_from As Integer, current_inventory As Integer,
                    distributor_inventory As Integer, reorder_amount As Integer,
-                   reorder_cost As Double, is_valid As Integer)
+                   reorder_cost As Double, lead_time As Integer, is_valid As Integer)
         Me.warehouse_id = warehouse_id
         Me.reorder_day = reorder_day
         Me.reordered_from = reordered_from
@@ -30,6 +31,7 @@ Public Structure Reorder_report
         Me.distributor_inventory = distributor_inventory
         Me.reorder_amount = reorder_amount
         Me.reorder_cost = reorder_cost
+        Me.lead_time = lead_time
         Me.is_valid = is_valid
     End Sub
 End Structure
