@@ -36,7 +36,7 @@ Public Class Dependent_Warehouse
 
                 Dim curr_reorder_cost As Double = distributors_reorder_info(distributor.warehouse_id).reorder_cost * (Math.Ceiling(amount_given / items_per_pallet))
 
-                Dim new_reorder_report As Reorder_report = New Reorder_report(warehouse_id, period, distributor.warehouse_id, end_day_inventory(period), distributor.end_day_inventory(period), amount_given, curr_reorder_cost, True)
+                Dim new_reorder_report As Reorder_report = New Reorder_report(warehouse_id, period, distributor.warehouse_id, end_day_inventory(period), distributor.end_day_inventory(period), amount_given, curr_reorder_cost, lead_time, True)
                 reorder_report_history(period) = new_reorder_report
                 'Console.WriteLine("" & warehouse_id & " reordered from " & distributor.warehouse_id & " for " & amount_given & " at cost " & curr_reorder_cost)
                 Return

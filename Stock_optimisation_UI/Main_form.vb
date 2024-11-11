@@ -84,6 +84,11 @@ Public Class Main_form
 
         NumSimulation = Convert.ToInt32(Math.Floor(TotalDaysSimulated / NumSimulationDays))
 
+        If CSVDumpCheckbox.Checked Then
+            RunSimulationOutputToCSV(NumSimulationDays)
+        End If
+
+
         'debug print
         'MessageBox.Show("Num simulations is" & NumSimulation)
         Try
@@ -103,19 +108,50 @@ Public Class Main_form
         End Try
     End Sub
 
-    Private Sub Button1_Click(sender As Object, e As EventArgs)
-        Dim Warehouse_inputs_1 = New Warehouse_inputs(1, 24000, 0, 0, 16000, 18, 6, 3, SiteType.Base_Warehouse, 5, 700, 2000, 200)
-        Dim Warehouse_inputs_2 = New Warehouse_inputs(2, 16000, 1000, 300, 8000, 8, -1, -1, SiteType.Dependent_Warehouse, 5, 560, 2000, 200)
-        Dim Warehouse_inputs_3 = New Warehouse_inputs(3, 8000, 1000, 700, 4800, 4, -1, -1, SiteType.Dependent_Warehouse, 5, 840, 2000, 120)
-        WarehouseInputs = New List(Of Warehouse_inputs) From {Warehouse_inputs_1, Warehouse_inputs_3, Warehouse_inputs_2}
+    Private Sub RunSimulationOutputToCSV(NumSimulationDays As Integer)
+        Dim Warehousegroup = New Warehouse_Group(WarehouseInputs, ReorderRelations)
 
-        Dim reorder_inputs_1 = (2, 1, New Reorder_inputs(5, 1, 200))
-        Dim reorder_inputs_2 = (3, 1, New Reorder_inputs(4, 1, 100))
-        Dim reorder_inputs_3 = (3, 2, New Reorder_inputs(2, 1, 200))
-        ReorderRelations = New List(Of (Integer, Integer, Reorder_inputs)) From {reorder_inputs_1, reorder_inputs_2, reorder_inputs_3}
+        Dim ListOfWarehouses = Warehousegroup.return_entire_simulation(NumSimulationDays)
+        For Each warehouse In ListOfWarehouses
 
-        Dim WarehouseLocations = New Dictionary(Of Integer, String) From {{1, "London"}, {2, "Birmingham"}, {3, "Manchester"}}
-        Me.WarehouseLocations = WarehouseLocations
+            Dim FileName = warehouse.warehouse_id & "_SIMULATION_OUTPUT.csv"
+            Dim CSVString As String = $"Warehouse {warehouse.warehouse_id} located at {WarehouseLocations(warehouse.warehouse_id)}" & vbCrLf
+            CSVString += "Day, Beginning Day Inventory, Demand, End Day Inventory, Lost Sales, Reorder Confirmed, lead time, Reorder recieved,Reorder Amount" & vbCrLf
+
+            ''transforms the reorder information into a dictionary 
+            Dim Reorder_day_dictionary As Dictionary(Of Integer, Reorder_report) = New Dictionary(Of Integer, Reorder_report)
+            Dim Reorder_arrived_dictionary As Dictionary(Of Integer, Reorder_report) = New Dictionary(Of Integer, Reorder_report)
+
+
+            For Each reorder In warehouse.reorder_report_history
+                Reorder_day_dictionary(reorder.reorder_day) = reorder
+                Reorder_arrived_dictionary(reorder.reorder_day + reorder.lead_time) = reorder
+            Next
+
+            For day As Integer = 1 To NumSimulationDays
+                CSVString = CSVString & day & ", " & warehouse.start_day_inv(day) & ", " & warehouse.demand(day) & ", " & warehouse.end_day_inventory(day) & ", " & warehouse.lost_sales(day) & ","
+
+                Dim reorder_string_one As String = ""
+                Dim reorder_string_two As String = ""
+
+                If Reorder_day_dictionary.Keys.Contains(day) Then
+                    reorder_string_one = "Yes, " & Reorder_day_dictionary(day).lead_time & ","
+                Else
+                    reorder_string_one = "No, N/A,"
+                End If
+
+                If Reorder_arrived_dictionary.Keys.Contains(day) Then
+                    reorder_string_two = "Yes, " & Reorder_arrived_dictionary(day).reorder_amount & ""
+                Else
+                    reorder_string_two = "No, N/A"
+                End If
+
+                CSVString = CSVString & reorder_string_one & reorder_string_two & vbCrLf
+
+
+            Next
+            File.WriteAllText(FileName, CSVString)
+        Next
     End Sub
 
     Private Sub btnStockWizard_Click(sender As Object, e As EventArgs) Handles btnStockWizard.Click

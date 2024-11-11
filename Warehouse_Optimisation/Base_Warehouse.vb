@@ -29,7 +29,7 @@ Public Class Base_Warehouse
         Dim lead_time As Integer = Utils.calculate_lead_time(lead_time_mean, lead_time_std)
         current_incoming_shipment = lead_time + period
         current_incoming_shipment_size = reorder_amount * items_per_pallet
-        Dim new_reorder_report As Reorder_report = New Reorder_report(warehouse_id, period, -1, end_day_inventory(period), -1, reorder_amount, reorder_amount * reorder_cost, True)
+        Dim new_reorder_report As Reorder_report = New Reorder_report(warehouse_id, period, -1, end_day_inventory(period), -1, reorder_amount, reorder_amount * reorder_cost, lead_time, True)
         reorder_report_history(period) = new_reorder_report
 
     End Sub

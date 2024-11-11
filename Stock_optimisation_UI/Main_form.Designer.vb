@@ -46,6 +46,7 @@ Partial Class Main_form
         CostFunctionComboBox = New ComboBox()
         OneVarRadioButton = New RadioButton()
         TwoVarRadioButton = New RadioButton()
+        CSVDumpCheckbox = New CheckBox()
         InputsBox.SuspendLayout()
         MonteBox.SuspendLayout()
         StockWizardBox.SuspendLayout()
@@ -189,6 +190,7 @@ Partial Class Main_form
         ' 
         ' MonteBox
         ' 
+        MonteBox.Controls.Add(CSVDumpCheckbox)
         MonteBox.Controls.Add(Label1)
         MonteBox.Controls.Add(NumSimulationDaysTextBox)
         MonteBox.Controls.Add(lblMonteTitle)
@@ -302,6 +304,17 @@ Partial Class Main_form
         TwoVarRadioButton.Text = "Optimise Reorder Points and Amount"
         TwoVarRadioButton.UseVisualStyleBackColor = True
         ' 
+        ' CSVDumpCheckbox
+        ' 
+        CSVDumpCheckbox.AutoSize = True
+        CSVDumpCheckbox.Font = New Font("Arial", 9F, FontStyle.Regular, GraphicsUnit.Point)
+        CSVDumpCheckbox.Location = New Point(8, 131)
+        CSVDumpCheckbox.Name = "CSVDumpCheckbox"
+        CSVDumpCheckbox.Size = New Size(217, 19)
+        CSVDumpCheckbox.TabIndex = 7
+        CSVDumpCheckbox.Text = "Output Final Simulation to CSV File"
+        CSVDumpCheckbox.UseVisualStyleBackColor = True
+        ' 
         ' Main_form
         ' 
         AutoScaleDimensions = New SizeF(7F, 15F)
@@ -347,5 +360,6 @@ Partial Class Main_form
     Friend WithEvents TwoVarRadioButton As RadioButton
     Friend WithEvents CostFunctionComboBox As ComboBox
     Friend WithEvents Label2 As Label
+    Friend WithEvents CSVDumpCheckbox As CheckBox
 
 End Class
