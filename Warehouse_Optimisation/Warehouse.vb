@@ -31,7 +31,7 @@ Public MustInherit Class Warehouse
         Me.start_day_inv(0) = inputs.initial_inventory
         Me.end_day_inventory = New Integer(sim_length) {}
         Me.end_day_inventory(0) = inputs.initial_inventory
-        Me.demand = Utils.generate_normal_random_ints(inputs.demand_mean, inputs.demand_sd, sim_length + 1) ''Plus one allows to just call demand(period) to make it easier
+        Me.demand = inputs.demandParameter.generate_demand(sim_length)
         Me.reorder_amount = inputs.reorder_amount
         Me.current_incoming_shipment = -1
         Me.current_incoming_shipment_size = 0

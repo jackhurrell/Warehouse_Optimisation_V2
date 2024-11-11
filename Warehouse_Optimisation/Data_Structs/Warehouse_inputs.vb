@@ -19,8 +19,7 @@ End Enum
 Public Class Warehouse_inputs
     Public warehouse_id As Integer
     Public initial_inventory As Integer
-    Public demand_mean As Double
-    Public demand_sd As Double
+    Public demandParameter As IDemandGenerator
     Public reorder_point As Double
     Public reorder_amount As Double
     Public lead_time_mean As Double
@@ -30,7 +29,6 @@ Public Class Warehouse_inputs
     Public holding_cost_per_pallet As Double
     Public items_per_pallet As Integer
     Public reorder_cost As Double
-
 
 
     Public Sub New(warehouse_id As Integer, initial_inventory As Integer,

@@ -24,7 +24,7 @@ Public Module Utils
 
         For i As Integer = 0 To num_ints - 1 Step 2
 
-            'This is using the Box Muller transform - wiki can explain more'
+            'This is using the Box Muller transform - wikipedia can explain more'
             Dim U1 As Double = rand.NextDouble()
             Dim U2 As Double = rand.NextDouble()
 
