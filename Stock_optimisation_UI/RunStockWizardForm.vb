@@ -15,7 +15,16 @@ Public Class RunStockWizardForm
         Dim ProgressCallback As ProgressDelegate = Sub(progress)
                                                        Update_progress_bar(progress)
                                                    End Sub
-        Me.stockWizard = New Stock_Wizard(warehouseInputs, reorderRelations, progressCallback:=ProgressCallback, desired_service_levels:=desiredServiceLevels, CostFunction:=optimisationType, LostSalesPenaltyFactor:=LostSalesPenaltyFactor)
+
+        ''This is a copy of the warehouse inputs that will be used to create the stock wizard
+        Dim warehouseInputsCopy = New List(Of Warehouse_inputs)
+
+        For Each warehouse In warehouseInputs
+            warehouseInputsCopy.Add(New Warehouse_inputs(warehouse.warehouse_id, warehouse.initial_inventory, warehouse.demand_mean, warehouse.demand_sd, warehouse.reorder_point, warehouse.reorder_amount, warehouse.lead_time_mean, warehouse.lead_time_sd, warehouse.site_type, warehouse.profit_per_sale, warehouse.holding_cost_per_pallet, warehouse.items_per_pallet, warehouse.reorder_cost))
+        Next
+
+
+        Me.stockWizard = New Stock_Wizard(warehouseInputsCopy, reorderRelations, progressCallback:=ProgressCallback, desired_service_levels:=desiredServiceLevels, CostFunction:=optimisationType, LostSalesPenaltyFactor:=LostSalesPenaltyFactor)
     End Sub
 
 

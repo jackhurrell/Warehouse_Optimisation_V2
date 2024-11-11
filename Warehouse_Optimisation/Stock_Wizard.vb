@@ -93,6 +93,11 @@ Public Class Stock_Wizard
             reorder_amounts = Utils.Add_dictionaries_of_lists(reorder_amounts, next_points.Item2)
         Next
 
+        ''This part then changes the input values in the warehouse inputs back to the original values
+        For Each warehouse In Warehouse_group_to_optimise.warehouse_inputs
+            warehouse.reorder_point = reorder_points(warehouse.warehouse_id)(0)
+            warehouse.reorder_amount = reorder_amounts(warehouse.warehouse_id)(0)
+        Next
 
         Return (reorder_points, reorder_amounts)
 
