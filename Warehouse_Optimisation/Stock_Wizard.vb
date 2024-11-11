@@ -1,5 +1,4 @@
 ﻿
-
 Public Delegate Sub ProgressDelegate(progress As Integer)
 
 
@@ -24,20 +23,23 @@ Public Class Stock_Wizard
     Dim total_rounds As Integer
     Dim progressCallback As ProgressDelegate
     Dim CostFunction As OptimisedFor
+    Dim LostSalesPenaltyFactor As Integer
 
 
 
     Public Sub New(list_of_warehouse_inputs As List(Of Warehouse_inputs), list_of_warehouse_relationships As List(Of (Integer, Integer, Reorder_inputs)),
                    Optional desired_service_levels As Dictionary(Of Integer, Double) = Nothing, Optional logging As Boolean = False,
-                   Optional progressCallback As ProgressDelegate = Nothing, Optional CostFunction As OptimisedFor = OptimisedFor.CostsWithLostSales)
+                   Optional progressCallback As ProgressDelegate = Nothing, Optional CostFunction As OptimisedFor = OptimisedFor.CostsWithLostSales,
+                   Optional LostSalesPenaltyFactor As Double = 1)
 
         Me.Warehouse_group_to_optimise = New Warehouse_Group(list_of_warehouse_inputs, list_of_warehouse_relationships)
         Me.optimisation_order = Warehouse_group_to_optimise.calculate_reorder_order()
-        Me.optimisation_order.Reverse()
+        Me.optimisation_order.Reverse() '' the optimisation is done 'down' the network, unlike reordering which happens 'up' the network
         Me.logging_points = New Stock_wizard_logging(list_of_warehouse_inputs)
         Me.logging = logging
         Me.progressCallback = progressCallback
         Me.CostFunction = CostFunction
+        Me.LostSalesPenaltyFactor = LostSalesPenaltyFactor
 
         '''sets the desired service levels to 0.95 if none are provided
         If Me.desired_service_level Is Nothing Then
@@ -53,12 +55,9 @@ Public Class Stock_Wizard
 
     End Sub
 
-    Public Function Run_stock_wizard(num_optimisating_rounds As Integer, iteration_params As List(Of Stock_wizard_iteration_inputs)) As (Dictionary(Of Integer, List(Of Double)), Dictionary(Of Integer, List(Of Double)))
+    Public Function Run_stock_wizard(iteration_params As List(Of Stock_wizard_iteration_inputs)) As (Dictionary(Of Integer, List(Of Double)), Dictionary(Of Integer, List(Of Double)))
 
-        '''This guard is to ensure that the inputs are of the correct length
-        If num_optimisating_rounds <> iteration_params.Count Then
-            Throw New Exception("The number of dual and single simulation rounds must add up to the size of the params")
-        End If
+        Dim num_optimisating_rounds As Integer = iteration_params.Count
 
         ''Sets up the values for the progres bars
         Me.total_rounds = 0
@@ -94,6 +93,11 @@ Public Class Stock_Wizard
             reorder_amounts = Utils.Add_dictionaries_of_lists(reorder_amounts, next_points.Item2)
         Next
 
+        ''This part then changes the input values in the warehouse inputs back to the original values
+        For Each warehouse In Warehouse_group_to_optimise.warehouse_inputs
+            warehouse.reorder_point = reorder_points(warehouse.warehouse_id)(0)
+            warehouse.reorder_amount = reorder_amounts(warehouse.warehouse_id)(0)
+        Next
 
         Return (reorder_points, reorder_amounts)
 
@@ -142,7 +146,7 @@ Public Class Stock_Wizard
                 Next
 
                 Me.current_iteration_round += 1
-                Debug.Write("Updating Progress Bar")
+                'Debug.Write("Updating Progress Bar")
                 If progressCallback IsNot Nothing Then
                     progressCallback(CInt((current_iteration_round / total_rounds) * 100))
                 End If
@@ -160,8 +164,10 @@ Public Class Stock_Wizard
                     reorder_amounts(warehouse_id).Add(new_points.Item2)
                 Next
 
+                Me.current_iteration_round += 1
+                'Debug.Write("Updating Progress Bar")
                 If progressCallback IsNot Nothing Then
-                    progressCallback(CInt(current_iteration_round / total_rounds) * 100)
+                    progressCallback(CInt((current_iteration_round / total_rounds) * 100))
                 End If
 
             Next
@@ -348,6 +354,8 @@ Public Class Stock_Wizard
     ''' This method runs a simulation to calculate the service levels and costs, then applies a penalty
     ''' if the service levels do not meet the required threshold. The penalty is proportional to the
     ''' square of the difference between the required service level and the actual service level.
+    ''' The exact comabination of penalties included or not depends on what is being optimised for and thus
+    ''' is depenendent on the CostFunction variable.
     ''' </remarks>
     Public Function Cost_function(ByRef warehouse_inputs As Warehouse_inputs, iteration_params As Stock_wizard_iteration_inputs, reorder_point As Double, reorder_amount As Double) As Double
         Dim service_levels_and_costs = run_simulation_with_changes(warehouse_inputs, iteration_params, reorder_amount, reorder_point)
@@ -359,9 +367,9 @@ Public Class Stock_Wizard
 
         Dim total_costs = costs
 
-        ''checks if lost sales needs to be added and then does so. 
+        ''checks if lost sales needs to be added and applies the lost sales penalty factor 
         If Me.CostFunction <> OptimisedFor.CostWithPenalty Then
-            total_costs += lost_sales
+            total_costs += lost_sales * LostSalesPenaltyFactor
         End If
 
 

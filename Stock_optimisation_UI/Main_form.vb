@@ -17,6 +17,12 @@ Public Class Main_form
     Dim ReorderRelations As List(Of (Integer, Integer, Reorder_inputs))
     Dim WarehouseLocations As Dictionary(Of Integer, String)
 
+
+    Private Sub Main_form_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        LostSalesPenaltyFactorLabel.Visible = False
+        LostSalesPenaltyFactorTextBox.Visible = False
+    End Sub
+
     Private Sub btnOpenInputs_Click(sender As Object, e As EventArgs) Handles btnOpenInputs.Click
 
 
@@ -30,7 +36,6 @@ Public Class Main_form
             MessageBox.Show("Please select at least one of the SKU options")
             Exit Sub
         End If
-
 
         Dim NewNetwork = CreateNetworkCheckBox.Checked
         Dim NewSKU = CreateNewSkuCheckBox.Checked
@@ -174,6 +179,18 @@ Public Class Main_form
                 Exit Sub
         End Select
 
+
+        Dim lostSalesPenaltyFactor As Double = 1 '''Sets default value to 1 - ie no additional penalty
+
+        If LostSalesPenaltyFactorTextBox.Visible And (Not LostSalesPenaltyFactorTextBox.Text = "") Then
+            Try
+                lostSalesPenaltyFactor = Convert.ToDouble(LostSalesPenaltyFactorTextBox.Text)
+            Catch exp As Exception
+                MessageBox.Show("Please enter a valid number in the lost sales penalty factor box - if left blank the penalty will default to 1")
+                Exit Sub
+            End Try
+        End If
+
         Dim requiredServiceLevels As Dictionary(Of Integer, Double) = Nothing
 
         If OptimisationType = OptimisedFor.CostWithPenalty Or OptimisationType = OptimisedFor.CostsWithPenaltyAndLostSales Then
@@ -204,14 +221,14 @@ Public Class Main_form
         ''Works out which box is checked
         If TwoVarRadioButton.Checked Then
 
-            StockWizardIterationInputs.Add(New Stock_wizard_iteration_inputs(40, 250, 365, 50, 35, delta_point:=0.1, delta_amount:=0.1, base_penalty:=350))
-            StockWizardIterationInputs.Add(New Stock_wizard_iteration_inputs(30, 250, 365, 25, 20, delta_point:=0.05, delta_amount:=0.05, base_penalty:=700))
-            StockWizardIterationInputs.Add(New Stock_wizard_iteration_inputs(20, 300, 365, 25, 30, num_var_to_optimise:=1, base_penalty:=1400))
+            StockWizardIterationInputs.Add(New Stock_wizard_iteration_inputs(4, 250, 365, 50, 35, delta_point:=0.1, delta_amount:=0.1, base_penalty:=350))
+            StockWizardIterationInputs.Add(New Stock_wizard_iteration_inputs(3, 250, 365, 25, 20, delta_point:=0.05, delta_amount:=0.05, base_penalty:=700))
+            StockWizardIterationInputs.Add(New Stock_wizard_iteration_inputs(2, 300, 365, 25, 30, num_var_to_optimise:=1, base_penalty:=1400))
 
         ElseIf OneVarRadioButton.Checked Then
-            StockWizardIterationInputs.Add(New Stock_wizard_iteration_inputs(40, 250, 365, 50, 35, num_var_to_optimise:=1, delta_point:=0.8, delta_amount:=0.8, base_penalty:=350))
-            StockWizardIterationInputs.Add(New Stock_wizard_iteration_inputs(40, 350, 365, 50, 35, num_var_to_optimise:=1, delta_point:=0.3, delta_amount:=0.3, base_penalty:=500))
-            StockWizardIterationInputs.Add(New Stock_wizard_iteration_inputs(40, 350, 365, 50, 35, num_var_to_optimise:=1, delta_point:=0.2, delta_amount:=0.2, base_penalty:=650))
+            StockWizardIterationInputs.Add(New Stock_wizard_iteration_inputs(4, 250, 365, 50, 35, num_var_to_optimise:=1, delta_point:=0.8, delta_amount:=0.8, base_penalty:=350))
+            StockWizardIterationInputs.Add(New Stock_wizard_iteration_inputs(4, 350, 365, 50, 35, num_var_to_optimise:=1, delta_point:=0.3, delta_amount:=0.3, base_penalty:=500))
+            StockWizardIterationInputs.Add(New Stock_wizard_iteration_inputs(4, 350, 365, 50, 35, num_var_to_optimise:=1, delta_point:=0.2, delta_amount:=0.2, base_penalty:=650))
         Else
             MessageBox.Show("Please Choose which values to Optimise for")
             Exit Sub
@@ -222,7 +239,7 @@ Public Class Main_form
             Exit Sub
         End If
 
-        Dim stockwizardform As New RunStockWizardForm(Me.WarehouseInputs, Me.ReorderRelations, StockWizardIterationInputs, requiredServiceLevels, OptimisationType)
+        Dim stockwizardform As New RunStockWizardForm(Me.WarehouseInputs, Me.ReorderRelations, StockWizardIterationInputs, requiredServiceLevels, OptimisationType, lostSalesPenaltyFactor)
 
         btnStockWizard.Enabled = False
         stockwizardform.RunStockWizard()
@@ -254,5 +271,14 @@ Public Class Main_form
         End If
     End Sub
 
-End Class
+    Private Sub CostFunctionComboBox_SelectedIndexChanged(sender As Object, e As EventArgs) Handles CostFunctionComboBox.SelectedIndexChanged
+        If CostFunctionComboBox.SelectedItem = "Balance Costs With Opportunity Costs" Or CostFunctionComboBox.SelectedItem = "Balance Opportunity Costs with a Min SL" Then
+            LostSalesPenaltyFactorLabel.Visible = True
+            LostSalesPenaltyFactorTextBox.Visible = True
+        Else
+            LostSalesPenaltyFactorLabel.Visible = False
+            LostSalesPenaltyFactorTextBox.Visible = False
+        End If
+    End Sub
 
+End Class
