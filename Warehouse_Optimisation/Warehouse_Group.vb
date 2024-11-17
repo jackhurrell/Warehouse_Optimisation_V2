@@ -1,16 +1,16 @@
 ﻿Public Class Warehouse_Group
 
     Public warehouse_inputs As List(Of Warehouse_inputs)
-    Public warehouse_relationships As List(Of (Integer, Integer, Reorder_inputs))
-    Public reorder_order As List(Of Integer)
+    Public warehouse_relationships As List(Of (String, String, Reorder_inputs))
+    Public reorder_order As List(Of String)
 
-    Public Sub New(warehouse_inputs As List(Of Warehouse_inputs), warehouse_relationships As List(Of (Integer, Integer, Reorder_inputs)))
+    Public Sub New(warehouse_inputs As List(Of Warehouse_inputs), warehouse_relationships As List(Of (String, String, Reorder_inputs)))
         Me.warehouse_inputs = warehouse_inputs
         Me.warehouse_relationships = warehouse_relationships
         reorder_order = Me.calculate_reorder_order()
     End Sub
 
-    Public Sub alter_reorder_point(warehouse_id As Integer, altered_by As Integer)
+    Public Sub alter_reorder_point(warehouse_id As String, altered_by As String)
         For Each warehouse In Me.warehouse_inputs
             If warehouse.warehouse_id = warehouse_id Then
                 Console.WriteLine("Reorder point for warehouse " & warehouse_id & " has been altered by " & altered_by)
@@ -33,7 +33,7 @@
     ''' The reorder paths are combined across all simulations, and the factory order is set based on the first simulation.
     ''' </remarks>
     Public Overridable Function run_Monte_Carlo(number_simulations As Integer, number_days As Integer)
-        Dim results As New Monte_Carlo_results(New List(Of List(Of Double)), New List(Of List(Of Double)), New List(Of Dictionary(Of Integer, Integer)), New List(Of List(Of Double)), New List(Of List(Of Double)), New List(Of List(Of Double)), New List(Of List(Of Integer)), New List(Of Integer))
+        Dim results As New Monte_Carlo_results(New List(Of List(Of Double)), New List(Of List(Of Double)), New List(Of Dictionary(Of String, Integer)), New List(Of List(Of Double)), New List(Of List(Of Double)), New List(Of List(Of Double)), New List(Of List(Of Integer)), New List(Of String))
 
         For i As Integer = 0 To number_simulations - 1
             Dim new_simulation = New Simulation(warehouse_inputs, number_days, reorder_order, warehouse_relationships)
@@ -50,7 +50,7 @@
                 results.Reorder_paths = sim_results.reorder_paths
             Else
                 For j As Integer = 0 To results.Reorder_paths.Count - 1
-                    results.Reorder_paths(j) = Utils.Add_integer_dictionaries(results.Reorder_paths(j), sim_results.reorder_paths(j))
+                    results.Reorder_paths(j) = Utils.Add_string_dictionaries(results.Reorder_paths(j), sim_results.reorder_paths(j))
                 Next
             End If
 
@@ -117,20 +117,20 @@
     ''' This method uses Kahn's algorithm to perform a topological sort on the warehouse relationships graph.
     ''' It initializes the adjacency list and in-degrees for each warehouse, then processes the graph to determine the order in which reorders should be processed.
     ''' </remarks>
-    Function calculate_reorder_order() As List(Of Integer)
+    Function calculate_reorder_order() As List(Of String)
         If warehouse_inputs.Count = 1 Then
-            Return New List(Of Integer) From {warehouse_inputs(0).warehouse_id}
+            Return New List(Of String) From {warehouse_inputs(0).warehouse_id}
         End If
-        Dim inDegree As New Dictionary(Of Integer, Integer)()
-        Dim graph As New Dictionary(Of Integer, List(Of Integer))()
+        Dim inDegree As New Dictionary(Of String, String)()
+        Dim graph As New Dictionary(Of String, List(Of String))()
 
         For Each edge In warehouse_relationships
-            Dim u As Integer = edge.Item1
-            Dim v As Integer = edge.Item2
+            Dim u As String = edge.Item1
+            Dim v As String = edge.Item2
 
             ' Initialize the adjacency list
             If Not graph.ContainsKey(u) Then
-                graph(u) = New List(Of Integer)()
+                graph(u) = New List(Of String)()
             End If
             graph(u).Add(v)
 
@@ -147,16 +147,16 @@
         Next
 
 
-        Dim queue As New Queue(Of Integer)()
+        Dim queue As New Queue(Of String)()
         For Each kvp In inDegree
             If kvp.Value = 0 Then
                 queue.Enqueue(kvp.Key)
             End If
         Next
 
-        Dim topologicalOrder As New List(Of Integer)()
+        Dim topologicalOrder As New List(Of String)()
         While queue.Count > 0
-            Dim u As Integer = queue.Dequeue()
+            Dim u As String = queue.Dequeue()
             topologicalOrder.Add(u)
 
             If graph.ContainsKey(u) Then
@@ -176,6 +176,5 @@
         Return topologicalOrder
 
     End Function
-
 
 End Class

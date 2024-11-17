@@ -5,13 +5,13 @@ Public Class Dependent_Warehouse
     Inherits Warehouse
 
     Public distributors As List(Of Warehouse)
-    Public distributors_reorder_info As Dictionary(Of Integer, Reorder_inputs)
+    Public distributors_reorder_info As Dictionary(Of String, Reorder_inputs)
 
 
     Public Sub New(inputs As Warehouse_inputs, sim_length As Integer)
         MyBase.New(inputs, sim_length)
         distributors = New List(Of Warehouse)
-        distributors_reorder_info = New Dictionary(Of Integer, Reorder_inputs)
+        distributors_reorder_info = New Dictionary(Of String, Reorder_inputs)
     End Sub
     ''' <summary>
     ''' Calculates the reorder for the dependent warehouse based on the current inventory and reorder point.

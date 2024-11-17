@@ -74,6 +74,17 @@ Public Module Utils
         Return cumulative_dictionary
     End Function
 
+
+    Public Function Add_string_dictionaries(cumulative_dictionary As Dictionary(Of String, Integer), new_dictionary As Dictionary(Of String, Integer)) As Dictionary(Of String, Integer)
+        For Each key In new_dictionary.Keys
+            If cumulative_dictionary.ContainsKey(key) Then
+                cumulative_dictionary(key) += new_dictionary(key)
+            Else
+                cumulative_dictionary.Add(key, new_dictionary(key))
+            End If
+        Next
+        Return cumulative_dictionary
+    End Function
     ''' <summary>
     ''' Merges two dictionaries of lists by adding the elements of the new dictionary to the old dictionary.
     ''' </summary>
@@ -86,8 +97,8 @@ Public Module Utils
     ''' If a key from the new dictionary already exists in the old dictionary, the elements from the new dictionary's list are appended to the old dictionary's list.
     ''' If a key from the new dictionary does not exist in the old dictionary, a new key-value pair is added to the old dictionary.
     ''' </remarks>
-    Public Function Add_dictionaries_of_lists(Old_dictionary As Dictionary(Of Integer, List(Of Double)), New_dictionary As Dictionary(Of Integer, List(Of Double))) As Dictionary(Of Integer, List(Of Double))
-        For Each kvp As KeyValuePair(Of Integer, List(Of Double)) In New_dictionary
+    Public Function Add_dictionaries_of_lists(Old_dictionary As Dictionary(Of String, List(Of Double)), New_dictionary As Dictionary(Of String, List(Of Double))) As Dictionary(Of String, List(Of Double))
+        For Each kvp As KeyValuePair(Of String, List(Of Double)) In New_dictionary
             If Old_dictionary.ContainsKey(kvp.Key) Then
                 Old_dictionary(kvp.Key).AddRange(kvp.Value)
             Else

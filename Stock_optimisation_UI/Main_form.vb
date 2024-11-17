@@ -14,8 +14,8 @@ Public Class Main_form
     Const TotalDaysSimulated = 1000000
 
     Dim WarehouseInputs As List(Of Warehouse_inputs)
-    Dim ReorderRelations As List(Of (Integer, Integer, Reorder_inputs))
-    Dim WarehouseLocations As Dictionary(Of Integer, String)
+    Dim ReorderRelations As List(Of (String, String, Reorder_inputs))
+    Dim WarehouseLocations As Dictionary(Of String, String)
 
 
     Private Sub Main_form_Load(sender As Object, e As EventArgs) Handles MyBase.Load
@@ -191,10 +191,10 @@ Public Class Main_form
             End Try
         End If
 
-        Dim requiredServiceLevels As Dictionary(Of Integer, Double) = Nothing
+        Dim requiredServiceLevels As Dictionary(Of String, Double) = Nothing
 
         If OptimisationType = OptimisedFor.CostWithPenalty Or OptimisationType = OptimisedFor.CostsWithPenaltyAndLostSales Then
-            Dim ListOfWarehouseIDs = New List(Of Integer)
+            Dim ListOfWarehouseIDs = New List(Of String)
 
             For Each warehouse In WarehouseInputs
                 If warehouse.demand_mean <> 0 Then

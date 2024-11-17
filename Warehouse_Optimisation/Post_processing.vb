@@ -40,8 +40,8 @@
         Return averages
     End Function
 
-    Public Function create_id_to_position_map(warehouse_order As List(Of Integer)) As Dictionary(Of Integer, Integer)
-        Dim id_to_position As New Dictionary(Of Integer, Integer)
+    Public Function create_id_to_position_map(warehouse_order As List(Of String)) As Dictionary(Of String, Integer)
+        Dim id_to_position As New Dictionary(Of String, Integer)
         For i As Integer = 0 To warehouse_order.Count - 1
             id_to_position.Add(warehouse_order(i), i)
         Next

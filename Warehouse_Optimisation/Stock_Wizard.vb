@@ -13,8 +13,8 @@ Public Class Stock_Wizard
     End Enum
 
     Dim Warehouse_group_to_optimise As Warehouse_Group
-    Dim optimisation_order As List(Of Integer)
-    Dim desired_service_level As Dictionary(Of Integer, Double)
+    Dim optimisation_order As List(Of String)
+    Dim desired_service_level As Dictionary(Of String, Double)
     'Dim iteration_params As List(Of Stock_wizard_iteration_inputs)
     Public logging_points As Stock_wizard_logging
     Dim logging As Boolean
@@ -27,8 +27,8 @@ Public Class Stock_Wizard
 
 
 
-    Public Sub New(list_of_warehouse_inputs As List(Of Warehouse_inputs), list_of_warehouse_relationships As List(Of (Integer, Integer, Reorder_inputs)),
-                   Optional desired_service_levels As Dictionary(Of Integer, Double) = Nothing, Optional logging As Boolean = False,
+    Public Sub New(list_of_warehouse_inputs As List(Of Warehouse_inputs), list_of_warehouse_relationships As List(Of (String, String, Reorder_inputs)),
+                   Optional desired_service_levels As Dictionary(Of String, Double) = Nothing, Optional logging As Boolean = False,
                    Optional progressCallback As ProgressDelegate = Nothing, Optional CostFunction As OptimisedFor = OptimisedFor.CostsWithLostSales,
                    Optional LostSalesPenaltyFactor As Double = 1)
 
@@ -43,7 +43,7 @@ Public Class Stock_Wizard
 
         '''sets the desired service levels to 0.95 if none are provided
         If Me.desired_service_level Is Nothing Then
-            Me.desired_service_level = New Dictionary(Of Integer, Double)
+            Me.desired_service_level = New Dictionary(Of String, Double)
             For Each warehouse In Warehouse_group_to_optimise.warehouse_inputs
                 Me.desired_service_level.Add(warehouse.warehouse_id, 0.95)
             Next
@@ -55,7 +55,7 @@ Public Class Stock_Wizard
 
     End Sub
 
-    Public Function Run_stock_wizard(iteration_params As List(Of Stock_wizard_iteration_inputs)) As (Dictionary(Of Integer, List(Of Double)), Dictionary(Of Integer, List(Of Double)))
+    Public Function Run_stock_wizard(iteration_params As List(Of Stock_wizard_iteration_inputs)) As (Dictionary(Of String, List(Of Double)), Dictionary(Of String, List(Of Double)))
 
         Dim num_optimisating_rounds As Integer = iteration_params.Count
 
@@ -66,8 +66,8 @@ Public Class Stock_Wizard
         Next
 
         ''Sets up the returns dictionaries
-        Dim reorder_points As New Dictionary(Of Integer, List(Of Double))
-        Dim reorder_amounts As New Dictionary(Of Integer, List(Of Double))
+        Dim reorder_points As New Dictionary(Of String, List(Of Double))
+        Dim reorder_amounts As New Dictionary(Of String, List(Of Double))
 
         For Each warehouse In Warehouse_group_to_optimise.warehouse_inputs
             reorder_points.Add(warehouse.warehouse_id, New List(Of Double))
@@ -79,7 +79,7 @@ Public Class Stock_Wizard
 
         ''The retun positions from the simulations can not match up with warehouse ID
         ''This maps the warehouse ID to the position in the return list for simulation results
-        Dim warehouse_id_to_return_position As New Dictionary(Of Integer, Integer)
+        Dim warehouse_id_to_return_position As New Dictionary(Of String, Integer)
         For i As Integer = 0 To Warehouse_group_to_optimise.warehouse_inputs.Count - 1
             warehouse_id_to_return_position.Add(Warehouse_group_to_optimise.warehouse_inputs(i).warehouse_id, i)
         Next
@@ -123,12 +123,12 @@ Public Class Stock_Wizard
     ''' It checks the iteration parmams to see if there is one or two variables to optimise.
     ''' It updates the reorder points and amounts based on the calculated gradients and learning rates.
     ''' </remarks>
-    Public Function run_round_of_optimisation(iteration_params As Stock_wizard_iteration_inputs, warehouse_id_to_pos_dict As Dictionary(Of Integer, Integer)) As (Dictionary(Of Integer, List(Of Double)), Dictionary(Of Integer, List(Of Double)))
+    Public Function run_round_of_optimisation(iteration_params As Stock_wizard_iteration_inputs, warehouse_id_to_pos_dict As Dictionary(Of String, Integer)) As (Dictionary(Of String, List(Of Double)), Dictionary(Of String, List(Of Double)))
 
         'Debug.WriteLine("New Round of optimisation Starting")
 
-        Dim reorder_points As New Dictionary(Of Integer, List(Of Double))
-        Dim reorder_amounts As New Dictionary(Of Integer, List(Of Double))
+        Dim reorder_points As New Dictionary(Of String, List(Of Double))
+        Dim reorder_amounts As New Dictionary(Of String, List(Of Double))
 
         For Each warehouse In Warehouse_group_to_optimise.warehouse_inputs
             reorder_points.Add(warehouse.warehouse_id, New List(Of Double))
@@ -420,7 +420,7 @@ Public Class Stock_Wizard
     ''' This method updates the reorder point and amount for the warehouse inputs, then runs a Monte Carlo simulation
     ''' to calculate the service levels and total cost.
     ''' </remarks>
-    Public Function run_simulation_with_changes(ByRef warehouse_inputs As Warehouse_inputs, iteration_params As Stock_wizard_iteration_inputs, reorder_amount As Double, reorder_point As Double) As (List(Of Double), List(Of Integer), Double, Double)
+    Public Function run_simulation_with_changes(ByRef warehouse_inputs As Warehouse_inputs, iteration_params As Stock_wizard_iteration_inputs, reorder_amount As Double, reorder_point As Double) As (List(Of Double), List(Of String), Double, Double)
         Debug.WriteLine("Sub Simulation with reorder_point " & reorder_point & " reorder_amount" & reorder_amount)
 
         warehouse_inputs.reorder_point = reorder_point

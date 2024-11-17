@@ -17,7 +17,7 @@ End Enum
 
 
 Public Class Warehouse_inputs
-    Public warehouse_id As Integer
+    Public warehouse_id As String
     Public initial_inventory As Integer
     Public demand_mean As Double
     Public demand_sd As Double
@@ -33,7 +33,7 @@ Public Class Warehouse_inputs
 
 
 
-    Public Sub New(warehouse_id As Integer, initial_inventory As Integer,
+    Public Sub New(warehouse_id As String, initial_inventory As Integer,
                    demand_mean As Double, demand_sd As Double,
                    reorder_point As Integer, reorder_amount As Integer,
                    lead_time_mean As Double, lead_time_sd As Double,

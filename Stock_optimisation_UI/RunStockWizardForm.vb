@@ -5,7 +5,7 @@ Public Class RunStockWizardForm
 
     Dim stockWizard As Stock_Wizard
     Dim IterationInputs As List(Of Stock_wizard_iteration_inputs)
-    Public Sub New(warehouseInputs As List(Of Warehouse_inputs), reorderRelations As List(Of (Integer, Integer, Reorder_inputs)), stockWizardIterationinputs As List(Of Stock_wizard_iteration_inputs), desiredServiceLevels As Dictionary(Of Integer, Double), optimisationType As OptimisedFor, Optional LostSalesPenaltyFactor As Double = 1)
+    Public Sub New(warehouseInputs As List(Of Warehouse_inputs), reorderRelations As List(Of (String, String, Reorder_inputs)), stockWizardIterationinputs As List(Of Stock_wizard_iteration_inputs), desiredServiceLevels As Dictionary(Of String, Double), optimisationType As OptimisedFor, Optional LostSalesPenaltyFactor As Double = 1)
 
         ' This call is required by the designer.
         InitializeComponent()
@@ -30,7 +30,7 @@ Public Class RunStockWizardForm
 
     Public Sub RunStockWizard()
 
-        Dim stockWizardResults As (Dictionary(Of Integer, List(Of Double)), Dictionary(Of Integer, List(Of Double))) = Nothing
+        Dim stockWizardResults As (Dictionary(Of String, List(Of Double)), Dictionary(Of String, List(Of Double))) = Nothing
 
         Task.Run(Sub()
                      stockWizardResults = Me.stockWizard.Run_stock_wizard(Me.IterationInputs)

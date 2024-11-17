@@ -4,7 +4,7 @@ Public Class Concurrent_Warehouse_Group
     Inherits Warehouse_Group
 
 
-    Public Sub New(warehouse_inputs As List(Of Warehouse_inputs), warehouse_relationships As List(Of (Integer, Integer, Reorder_inputs)))
+    Public Sub New(warehouse_inputs As List(Of Warehouse_inputs), warehouse_relationships As List(Of (String, String, Reorder_inputs)))
         MyBase.New(warehouse_inputs, warehouse_relationships)
         Me.warehouse_inputs = warehouse_inputs
         Me.warehouse_relationships = warehouse_relationships
@@ -23,7 +23,7 @@ Public Class Concurrent_Warehouse_Group
     ''' After all simulations are complete, it aggregates the results into the <see cref="Monte_Carlo_results"/> object and returns it.
     ''' </remarks>
     Public Overrides Function run_Monte_Carlo(number_simulations As Integer, number_days As Integer)
-        Dim results As New Monte_Carlo_results(New List(Of List(Of Double)), New List(Of List(Of Double)), New List(Of Dictionary(Of Integer, Integer)), New List(Of List(Of Double)), New List(Of List(Of Double)), New List(Of List(Of Double)), New List(Of List(Of Integer)), New List(Of Integer))
+        Dim results As New Monte_Carlo_results(New List(Of List(Of Double)), New List(Of List(Of Double)), New List(Of Dictionary(Of String, Integer)), New List(Of List(Of Double)), New List(Of List(Of Double)), New List(Of List(Of Double)), New List(Of List(Of Integer)), New List(Of String))
 
         Dim all_simulation_results As New ConcurrentBag(Of Simulation_result)
         Parallel.For(0, number_simulations, Sub(i)
@@ -43,7 +43,7 @@ Public Class Concurrent_Warehouse_Group
                 results.Reorder_paths = result.reorder_paths
             Else
                 For j As Integer = 0 To results.Reorder_paths.Count - 1
-                    results.Reorder_paths(j) = Utils.Add_integer_dictionaries(results.Reorder_paths(j), result.reorder_paths(j))
+                    results.Reorder_paths(j) = Utils.Add_string_dictionaries(results.Reorder_paths(j), result.reorder_paths(j))
                 Next
             End If
         Next

@@ -5,16 +5,17 @@ Imports Warehouse_Optimisation
 
 Public Class StockRecomendationsForm
 
-    Dim reorderPoints As Dictionary(Of Integer, List(Of Double))
-    Dim reorderAmounts As Dictionary(Of Integer, List(Of Double))
+    Dim reorderPoints As Dictionary(Of String, List(Of Double))
+    Dim reorderAmounts As Dictionary(Of String, List(Of Double))
     Dim warehouseGroup As Warehouse_Group
 
-    Public Sub New(results As (Dictionary(Of Integer, List(Of Double)), Dictionary(Of Integer, List(Of Double))), warehouseGroup As Warehouse_Group)
+    Public Sub New(results As (Dictionary(Of String, List(Of Double)), Dictionary(Of String, List(Of Double))), warehouseGroup As Warehouse_Group)
 
         ' This call is required by the designer.
         InitializeComponent()
 
         Me.reorderPoints = results.Item1
+        Me.reorderAmounts = results.Item2
         Me.reorderAmounts = results.Item2
         Me.warehouseGroup = warehouseGroup
 
