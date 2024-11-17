@@ -29,25 +29,25 @@
 
     End Sub
 
-    Public Sub add_reorder_points_and_amounts(warehouse_id As Integer, reorder_point As Double, reorder_amount As Double)
+    Public Sub add_reorder_points_and_amounts(warehouse_id As String, reorder_point As Double, reorder_amount As Double)
         reorder_points(warehouse_id).Add(reorder_point)
         reorder_amounts(warehouse_id).Add(reorder_amount)
     End Sub
 
-    Public Sub add_costs(warehouse_id As Integer, cost As Double)
+    Public Sub add_costs(warehouse_id As String, cost As Double)
         costs(warehouse_id).Add(cost)
     End Sub
 
-    Public Sub add_service_levels(warehouse_id As Integer, service_level As Double)
+    Public Sub add_service_levels(warehouse_id As String, service_level As Double)
         service_levels(warehouse_id).Add(service_level)
     End Sub
 
-    Public Sub add_gradient_points(warehouse_id As Integer, new_gradient_point As Double, new_gradient_amount As Double)
+    Public Sub add_gradient_points(warehouse_id As String, new_gradient_point As Double, new_gradient_amount As Double)
         gradient_point(warehouse_id).Add(new_gradient_point)
         gradient_amount(warehouse_id).Add(new_gradient_amount)
     End Sub
 
-    Public Sub add_penalty(warehouse_id As Integer, new_penalty As Double)
+    Public Sub add_penalty(warehouse_id As String, new_penalty As Double)
         penalty(warehouse_id).Add(new_penalty)
     End Sub
 

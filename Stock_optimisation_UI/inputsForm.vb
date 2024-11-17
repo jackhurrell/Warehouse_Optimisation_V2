@@ -561,7 +561,7 @@ Public Class inputsForm
 
     ''Checks if a reorder is already in the reorders Table - assues the WarehouseID and the 
     '' Reorders From ID are the first two columns of the table. 
-    Private Function ReorderInTable(WarehouseID As String, ReorderWarehouseID As String, table As DataGridView)
+    Private Function ReorderInTable(WarehouseID As Integer, ReorderWarehouseID As Integer, table As DataGridView)
         For Each row In table.Rows
             If Not row.IsNewRow AndAlso row.Cells(0).Value IsNot Nothing Then
                 If row.Cells(0).Value = WarehouseID And row.Cells(1).value = ReorderWarehouseID Then
@@ -814,11 +814,11 @@ Public Class inputsForm
                     Dim selectedSiteType As String = row.Cells("Site_type").Value.ToString()
                     Dim siteType As SiteType
                     If selectedSiteType = "Base Warehouse" Then
-                        siteType = SiteType.Base_Warehouse
+                        siteType = siteType.Base_Warehouse
                     ElseIf selectedSiteType = "Dependent Warehouse" Then
-                        siteType = SiteType.Dependent_Warehouse
+                        siteType = siteType.Dependent_Warehouse
                     Else
-                        siteType = SiteType.Dependent_Warehouse ''This is useless now, however is good to have a default case if this if statement is expanded
+                        siteType = siteType.Dependent_Warehouse ''This is useless now, however is good to have a default case if this if statement is expanded
                     End If
 
                     Dim warehouseInput As New Warehouse_inputs(
