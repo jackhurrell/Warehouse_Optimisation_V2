@@ -197,7 +197,7 @@ Public Class Main_form
             Dim ListOfWarehouseIDs = New List(Of Integer)
 
             For Each warehouse In WarehouseInputs
-                If warehouse.demand_mean <> 0 Then
+                If warehouse.demandParameter.returnmean <> 0 Then
                     ListOfWarehouseIDs.Add(warehouse.warehouse_id)
                 End If
             Next

@@ -11,6 +11,7 @@ Imports System.Drawing.Drawing2D
 Imports System.Net.Sockets
 Imports ADOX
 Imports System.Security.Authentication.ExtendedProtection
+Imports Microsoft.Identity.Client
 Public Class inputsForm
 
     Dim SKUInputs As (Integer, Double)
@@ -96,6 +97,7 @@ Public Class inputsForm
         Dim reorderRelationForReturn = New List(Of (Integer, Integer, Reorder_inputs))
         Dim warehouseAddresses = New Dictionary(Of Integer, String)
 
+        ''Only Need to return the reorders for non-base warehouses
         For Each reorder In Me.reorderInputs
             If reorder.Item2 <> -1 Then
                 reorderRelationForReturn.Add(reorder)
@@ -162,11 +164,21 @@ Public Class inputsForm
                         Dim demandStd = Convert.ToDouble(reader("Demand_std"))
                         Dim reorderPoint = Convert.ToDouble(reader("Reorder_point"))
                         Dim reorderAmount = Convert.ToInt32(reader("Reorder_amount"))
+                        Dim IsHistoricalDemand = Convert.ToBoolean(reader("Historical_Demand"))
+
+
+                        Dim demand As IDemandGenerator
+                        If IsHistoricalDemand = True Then
+                            demand = GetHistoricalDemand(warehouseID)
+                        Else
+                            demand = New MeanAndSTDDemand(demandMean, demandStd)
+                        End If
+
 
 
                         '''This uses both the currently loaded data and the previously loaded data to create a new warehouse input
                         '''Ít doesn't work out if there is a corresponding matching reorder relationship.
-                        Dim NewWarehouseInput = New Warehouse_inputs(warehouseID, initialInventory, demandMean, demandStd, reorderPoint,
+                        Dim NewWarehouseInput = New Warehouse_inputs(warehouseID, initialInventory, demand, reorderPoint,
                                                                      reorderAmount, -1, -1, Me.WarehouseInputs(warehouseID).Warehouse_SiteType,
                                                                      Me.SKUInputs.Item2, Me.WarehouseInputs(warehouseID).Holding_cost_per_pallet,
                                                                      Me.SKUInputs.Item1, -1)
@@ -382,13 +394,13 @@ Public Class inputsForm
 
         Dim query As String = "
             MERGE INTO prophit.[OPT.WarehouseAndSKU] AS Target
-            USING (VALUES (@Network_ID, @SKU, @Warehouse_ID, @Initial_inventory, @Demand_mean, @Demand_std, @Reorder_point, @Reorder_amount)) AS source (Network_ID, SKU, Warehouse_ID, Initial_inventory, Demand_mean, Demand_std, Reorder_point, Reorder_amount)
+            USING (VALUES (@Network_ID, @SKU, @Warehouse_ID, @Initial_inventory, @Demand_mean, @Demand_std, @Historical_Demand, @Reorder_point, @Reorder_amount)) AS source (Network_ID, SKU, Warehouse_ID, Initial_inventory, Demand_mean, Demand_std, Historical_Demand, Reorder_point, Reorder_amount)
             ON Target.Network_ID = source.Network_ID AND Target.SKU = source.SKU AND Target.Warehouse_ID = source.Warehouse_ID
             WHEN MATCHED THEN
-                UPDATE SET Initial_inventory = source.Initial_inventory, Demand_mean = source.Demand_mean, Demand_std = source.Demand_std, Reorder_point = source.Reorder_point, Reorder_amount = source.Reorder_amount
+                UPDATE SET Initial_inventory = source.Initial_inventory, Demand_mean = source.Demand_mean, Demand_std = source.Demand_std, Historical_Demand = source.Historical_Demand, Reorder_point = source.Reorder_point, Reorder_amount = source.Reorder_amount
             WHEN NOT MATCHED THEN
-                INSERT (Network_ID, SKU, Warehouse_ID, Initial_inventory, Demand_mean, Demand_std, Reorder_point, Reorder_amount)
-                VALUES (source.Network_ID, source.SKU, source.Warehouse_ID, source.Initial_inventory, source.Demand_mean, source.Demand_std, source.Reorder_point, source.Reorder_amount);
+                INSERT (Network_ID, SKU, Warehouse_ID, Initial_inventory, Demand_mean, Demand_std, Historical_Demand, Reorder_point, Reorder_amount)
+                VALUES (source.Network_ID, source.SKU, source.Warehouse_ID, source.Initial_inventory, source.Demand_mean, source.Demand_std, source.Historical_Demand, source.Reorder_point, source.Reorder_amount);
             DELETE From prophit.[OPT.WarehouseAndSKU]
             WHERE Network_ID = @Network_ID And SKU = @SKU And Warehouse_ID Not IN (" & WarehouseIDListString & ");"
 
@@ -402,8 +414,9 @@ Public Class inputsForm
                         cmd.Parameters.AddWithValue("@SKU", Me.SKU)
                         cmd.Parameters.AddWithValue("@Warehouse_ID", warehouseInput.warehouse_id)
                         cmd.Parameters.AddWithValue("@Initial_inventory", warehouseInput.initial_inventory)
-                        cmd.Parameters.AddWithValue("@Demand_mean", warehouseInput.demand_mean)
-                        cmd.Parameters.AddWithValue("@Demand_std", warehouseInput.demand_sd)
+                        cmd.Parameters.AddWithValue("@Demand_mean", warehouseInput.demandParameter.returnmean())
+                        cmd.Parameters.AddWithValue("@Demand_std", warehouseInput.demandParameter.returnstd())
+                        cmd.Parameters.AddWithValue("@Historical_Demand", If(TypeOf warehouseInput.demandParameter Is HistoricalDemand, 1, 0))
                         cmd.Parameters.AddWithValue("@Reorder_point", warehouseInput.reorder_point)
                         cmd.Parameters.AddWithValue("@Reorder_amount", warehouseInput.reorder_amount)
                         cmd.ExecuteNonQuery()
@@ -502,15 +515,16 @@ Public Class inputsForm
 
                     newRow.Cells(0).Value = warehouseInput.warehouse_id
                     newRow.Cells(1).Value = warehouseInput.initial_inventory
-                    newRow.Cells(2).Value = warehouseInput.demand_mean
-                    newRow.Cells(3).Value = warehouseInput.demand_sd
-                    newRow.Cells(4).Value = warehouseInput.reorder_point
-                    newRow.Cells(5).Value = warehouseInput.reorder_amount
-                    newRow.Cells(7).Value = Me.WarehouseInputs(warehouseInput.warehouse_id).Holding_cost_per_pallet
+                    newRow.Cells(2).Value = warehouseInput.demandParameter.returnmean()
+                    newRow.Cells(3).Value = warehouseInput.demandParameter.returnstd()
+                    newRow.Cells(4).Value = If(TypeOf warehouseInput.demandParameter Is HistoricalDemand, "Historical", "Mean and Std")
+                    newRow.Cells(5).Value = warehouseInput.reorder_point
+                    newRow.Cells(6).Value = warehouseInput.reorder_amount
+                    newRow.Cells(8).Value = Me.WarehouseInputs(warehouseInput.warehouse_id).Holding_cost_per_pallet
                     If WarehouseInputs(warehouseInput.warehouse_id).Warehouse_SiteType = SiteType.Base_Warehouse Then
-                        newRow.Cells(6).Value = "Base Warehouse"
+                        newRow.Cells(7).Value = "Base Warehouse"
                     ElseIf WarehouseInputs(warehouseInput.warehouse_id).Warehouse_SiteType = SiteType.Dependent_Warehouse Then
-                        newRow.Cells(6).Value = "Dependent Warehouse"
+                        newRow.Cells(7).Value = "Dependent Warehouse"
                     End If
                     DataGridWarehouse.Rows.Add(newRow)
                 End If
@@ -528,15 +542,15 @@ Public Class inputsForm
 
                 newRow.CreateCells(DataGridWarehouse)
                 newRow.Cells(0).Value = warehouseID
-                newRow.Cells(7).Value = WarehouseInputs(warehouseID).Holding_cost_per_pallet
+                newRow.Cells(8).Value = WarehouseInputs(warehouseID).Holding_cost_per_pallet
 
 
                 If WarehouseInputs(warehouseID).Warehouse_SiteType = SiteType.Base_Warehouse Then
 
-                    newRow.Cells(6).Value = "Base Warehouse"
+                    newRow.Cells(7).Value = "Base Warehouse"
 
                 ElseIf WarehouseInputs(warehouseID).Warehouse_SiteType = SiteType.Dependent_Warehouse Then
-                    newRow.Cells(6).Value = "Dependent Warehouse"
+                    newRow.Cells(7).Value = "Dependent Warehouse"
                 End If
 
                 DataGridWarehouse.Rows.Add(newRow)
@@ -821,11 +835,22 @@ Public Class inputsForm
                         siteType = SiteType.Dependent_Warehouse ''This is useless now, however is good to have a default case if this if statement is expanded
                     End If
 
+                    ''creates demand generator
+                    Dim demandType As String = row.Cells("DemandType").Value.ToString()
+                    Dim demand As IDemandGenerator
+                    If demandType = "Historical" Then
+                        demand = GetHistoricalDemand(Convert.ToInt32(row.Cells("Warehouse_ID").Value))
+                    Else
+                        Dim demandMean As Double = Convert.ToDouble(row.Cells("Demand_mean").Value)
+                        Dim demandSD As Double = Convert.ToDouble(row.Cells("Demand_std_dev").Value)
+                        demand = New MeanAndSTDDemand(demandMean, demandSD)
+                    End If
+
+
                     Dim warehouseInput As New Warehouse_inputs(
                         warehouse_id:=Convert.ToInt32(row.Cells("Warehouse_ID").Value),
                         initial_inventory:=Convert.ToInt32(row.Cells("Initial_inventory").Value),
-                        demand_mean:=Convert.ToDouble(row.Cells("Demand_mean").Value),
-                        demand_sd:=Convert.ToDouble(row.Cells("Demand_std_dev").Value),
+                        demand:=demand,
                         reorder_point:=Convert.ToDouble(row.Cells("Reorder_point").Value),
                         reorder_amount:=Convert.ToInt32(row.Cells("Reorder_amount").Value),
                         lead_time_mean:=-1,
@@ -850,6 +875,37 @@ Public Class inputsForm
 
 
         Return True
+    End Function
+
+    Private Function GetHistoricalDemand(warehouseID As Integer) As HistoricalDemand
+
+        Dim DemandList = New List(Of Integer)
+
+        Dim query = "SELECT * FROM prophit.[OPT.Historical_Demand] Where 
+            (SKU = @SKU AND WarehouseID = @WarehouseID AND NetworkID = @NetworkID)
+                    ORDER BY Day ASC;"
+
+        Using conn As New SqlConnection(connectionString)
+            Try
+                conn.Open()
+                Using cmd As New SqlCommand(query, conn)
+                    cmd.Parameters.AddWithValue("@SKU", SKU)
+                    cmd.Parameters.AddWithValue("@WarehouseID", warehouseID)
+                    cmd.Parameters.AddWithValue("@NetworkID", Me.NetworkID)
+                    Dim reader As SqlDataReader = cmd.ExecuteReader()
+                    While reader.Read()
+                        Dim TempDemand = Convert.ToInt32(reader("Demand"))
+                        DemandList.Add(TempDemand)
+                    End While
+                End Using
+            Catch exp As Exception
+                Throw New Exception("Error loading Historical Demand data from database:" & exp.Message)
+            End Try
+        End Using
+
+        Dim demand = New HistoricalDemand(DemandList.ToArray())
+
+        Return demand
     End Function
 
     Private Function validateReorderInputs() As Boolean
@@ -1176,4 +1232,10 @@ Public Class inputsForm
         InputsTabControl.TabPages.Remove(ShowWarehouseTabPage)
         InputsTabControl.SelectedTab = WarehouseLocationsTab
     End Sub
+
+    Private Sub WarehouseAndSKUInputsTab_Click(sender As Object, e As EventArgs) Handles WarehouseAndSKUInputsTab.Click
+
+    End Sub
+
+
 End Class

@@ -1,4 +1,4 @@
-﻿Public Class MeandAndSTDDemand
+﻿Public Class MeanAndSTDDemand
     Implements IDemandGenerator
 
     Public mean As Double

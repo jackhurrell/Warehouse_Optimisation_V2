@@ -20,7 +20,7 @@ Public Class RunStockWizardForm
         Dim warehouseInputsCopy = New List(Of Warehouse_inputs)
 
         For Each warehouse In warehouseInputs
-            warehouseInputsCopy.Add(New Warehouse_inputs(warehouse.warehouse_id, warehouse.initial_inventory, warehouse.demand_mean, warehouse.demand_sd, warehouse.reorder_point, warehouse.reorder_amount, warehouse.lead_time_mean, warehouse.lead_time_sd, warehouse.site_type, warehouse.profit_per_sale, warehouse.holding_cost_per_pallet, warehouse.items_per_pallet, warehouse.reorder_cost))
+            warehouseInputsCopy.Add(New Warehouse_inputs(warehouse.warehouse_id, warehouse.initial_inventory, warehouse.demandParameter, warehouse.reorder_point, warehouse.reorder_amount, warehouse.lead_time_mean, warehouse.lead_time_sd, warehouse.site_type, warehouse.profit_per_sale, warehouse.holding_cost_per_pallet, warehouse.items_per_pallet, warehouse.reorder_cost))
         Next
 
 

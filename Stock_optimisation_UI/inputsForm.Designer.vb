@@ -75,6 +75,7 @@ Partial Class inputsForm
         Initial_inventory = New DataGridViewTextBoxColumn()
         Demand_mean = New DataGridViewTextBoxColumn()
         Demand_std_dev = New DataGridViewTextBoxColumn()
+        DemandType = New DataGridViewTextBoxColumn()
         Reorder_point = New DataGridViewTextBoxColumn()
         Reorder_amount = New DataGridViewTextBoxColumn()
         Site_type = New DataGridViewComboBoxColumn()
@@ -537,7 +538,7 @@ Partial Class inputsForm
         DataGridWarehouse.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
         DataGridWarehouse.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders
         DataGridWarehouse.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize
-        DataGridWarehouse.Columns.AddRange(New DataGridViewColumn() {Warehouse_ID, Initial_inventory, Demand_mean, Demand_std_dev, Reorder_point, Reorder_amount, Site_type, Holding_cost_per_pallet})
+        DataGridWarehouse.Columns.AddRange(New DataGridViewColumn() {Warehouse_ID, Initial_inventory, Demand_mean, Demand_std_dev, DemandType, Reorder_point, Reorder_amount, Site_type, Holding_cost_per_pallet})
         DataGridViewCellStyle6.Alignment = DataGridViewContentAlignment.MiddleLeft
         DataGridViewCellStyle6.BackColor = Color.AliceBlue
         DataGridViewCellStyle6.Font = New Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point)
@@ -573,6 +574,11 @@ Partial Class inputsForm
         ' 
         Demand_std_dev.HeaderText = "Demand Std Dev"
         Demand_std_dev.Name = "Demand_std_dev"
+        ' 
+        ' DemandType
+        ' 
+        DemandType.HeaderText = "Demand Type"
+        DemandType.Name = "DemandType"
         ' 
         ' Reorder_point
         ' 
@@ -734,14 +740,6 @@ Partial Class inputsForm
     Friend WithEvents HoldningCost As DataGridViewTextBoxColumn
     Friend WithEvents DependentWarehouse As DataGridViewTextBoxColumn
     Friend WithEvents Address As DataGridViewTextBoxColumn
-    Friend WithEvents Warehouse_ID As DataGridViewTextBoxColumn
-    Friend WithEvents Initial_inventory As DataGridViewTextBoxColumn
-    Friend WithEvents Demand_mean As DataGridViewTextBoxColumn
-    Friend WithEvents Demand_std_dev As DataGridViewTextBoxColumn
-    Friend WithEvents Reorder_point As DataGridViewTextBoxColumn
-    Friend WithEvents Reorder_amount As DataGridViewTextBoxColumn
-    Friend WithEvents Site_type As DataGridViewComboBoxColumn
-    Friend WithEvents Holding_cost_per_pallet As DataGridViewTextBoxColumn
     Friend WithEvents Label6 As Label
     Friend WithEvents DataGridReorders As DataGridView
     Friend WithEvents Reorder_warehouse_id As DataGridViewTextBoxColumn
@@ -755,4 +753,13 @@ Partial Class inputsForm
     Friend WithEvents Label7 As Label
     Friend WithEvents AlterInputsButton As Button
     Friend WithEvents FinaliseInputsButton As Button
+    Friend WithEvents Warehouse_ID As DataGridViewTextBoxColumn
+    Friend WithEvents Initial_inventory As DataGridViewTextBoxColumn
+    Friend WithEvents Demand_mean As DataGridViewTextBoxColumn
+    Friend WithEvents Demand_std_dev As DataGridViewTextBoxColumn
+    Friend WithEvents DemandType As DataGridViewTextBoxColumn
+    Friend WithEvents Reorder_point As DataGridViewTextBoxColumn
+    Friend WithEvents Reorder_amount As DataGridViewTextBoxColumn
+    Friend WithEvents Site_type As DataGridViewComboBoxColumn
+    Friend WithEvents Holding_cost_per_pallet As DataGridViewTextBoxColumn
 End Class

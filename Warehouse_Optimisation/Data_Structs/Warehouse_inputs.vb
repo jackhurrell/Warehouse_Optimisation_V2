@@ -32,16 +32,14 @@ Public Class Warehouse_inputs
 
 
     Public Sub New(warehouse_id As Integer, initial_inventory As Integer,
-                   demand_mean As Double, demand_sd As Double,
-                   reorder_point As Integer, reorder_amount As Integer,
-                   lead_time_mean As Double, lead_time_sd As Double,
-                   site_type As SiteType, profit_per_sale As Double,
-                   holding_cost_per_pallet As Double, items_per_pallet As Integer,
-                   reorder_cost As Double)
+                   demand As IDemandGenerator, reorder_point As Integer,
+                   reorder_amount As Integer, lead_time_mean As Double,
+                   lead_time_sd As Double, site_type As SiteType,
+                   profit_per_sale As Double, holding_cost_per_pallet As Double,
+                   items_per_pallet As Integer, reorder_cost As Double)
         Me.warehouse_id = warehouse_id
         Me.initial_inventory = initial_inventory
-        Me.demand_mean = demand_mean
-        Me.demand_sd = demand_sd
+        Me.demandParameter = demand
         Me.reorder_point = reorder_point
         Me.reorder_amount = reorder_amount
         Me.lead_time_mean = lead_time_mean
