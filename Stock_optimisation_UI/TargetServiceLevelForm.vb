@@ -49,11 +49,7 @@
                 Dim serviceLevel As Double = Convert.ToDouble(DesiredServiceLevelDataGrid.Rows(1).Cells(colIndex).Value) / 100
                 desiredServicelevels.Add(warehouseID, serviceLevel)
             Catch exp As Exception
-<<<<<<< HEAD
                 MessageBox.Show("Please provide an warehouse ID as String and double value for service level")
-=======
-                MessageBox.Show("Please provide an warehouse ID as a String and double value for service level")
->>>>>>> e9c7d40 (Continued to convert the warehouse ID to a string. Further debugging and testing required)
                 Exit Sub
             End Try
         Next
