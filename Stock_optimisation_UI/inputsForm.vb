@@ -561,7 +561,7 @@ Public Class inputsForm
 
     ''Checks if a reorder is already in the reorders Table - assues the WarehouseID and the 
     '' Reorders From ID are the first two columns of the table. 
-    Private Function ReorderInTable(WarehouseID As Integer, ReorderWarehouseID As Integer, table As DataGridView)
+    Private Function ReorderInTable(WarehouseID As String, ReorderWarehouseID As String, table As DataGridView)
         For Each row In table.Rows
             If Not row.IsNewRow AndAlso row.Cells(0).Value IsNot Nothing Then
                 If row.Cells(0).Value = WarehouseID And row.Cells(1).value = ReorderWarehouseID Then
@@ -1045,7 +1045,7 @@ Public Class inputsForm
         Dim HoldingCost As Double
         Dim WarehouseType As String
         Try
-            WarehouseId = Convert.ToInt32(WarehouseIDTextBox.Text)
+            WarehouseId = Convert.ToString(WarehouseIDTextBox.Text)
             HoldingCost = Convert.ToDouble(HoldingCostTextBox.Text)
             If DependentWarehouseRadioButton.Checked = False And BaseWarehouseRadioButton.Checked = False Then
                 MessageBox.Show("Please select a warehouse type")
