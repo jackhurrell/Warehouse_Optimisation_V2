@@ -1,21 +1,21 @@
 ﻿Public Structure Stock_wizard_logging
 
-    Public reorder_points As Dictionary(Of Integer, List(Of Double))
-    Public reorder_amounts As Dictionary(Of Integer, List(Of Double))
-    Public costs As Dictionary(Of Integer, List(Of Double))
-    Public service_levels As Dictionary(Of Integer, List(Of Double))
-    Public gradient_point As Dictionary(Of Integer, List(Of Double))
-    Public gradient_amount As Dictionary(Of Integer, List(Of Double))
-    Public penalty As Dictionary(Of Integer, List(Of Double))
+    Public reorder_points As Dictionary(Of String, List(Of Double))
+    Public reorder_amounts As Dictionary(Of String, List(Of Double))
+    Public costs As Dictionary(Of String, List(Of Double))
+    Public service_levels As Dictionary(Of String, List(Of Double))
+    Public gradient_point As Dictionary(Of String, List(Of Double))
+    Public gradient_amount As Dictionary(Of String, List(Of Double))
+    Public penalty As Dictionary(Of String, List(Of Double))
 
     Public Sub New(Warehouse_inputs As List(Of Warehouse_inputs))
-        reorder_points = New Dictionary(Of Integer, List(Of Double))
-        reorder_amounts = New Dictionary(Of Integer, List(Of Double))
-        costs = New Dictionary(Of Integer, List(Of Double))
-        service_levels = New Dictionary(Of Integer, List(Of Double))
-        gradient_point = New Dictionary(Of Integer, List(Of Double))
-        gradient_amount = New Dictionary(Of Integer, List(Of Double))
-        penalty = New Dictionary(Of Integer, List(Of Double))
+        reorder_points = New Dictionary(Of String, List(Of Double))
+        reorder_amounts = New Dictionary(Of String, List(Of Double))
+        costs = New Dictionary(Of String, List(Of Double))
+        service_levels = New Dictionary(Of String, List(Of Double))
+        gradient_point = New Dictionary(Of String, List(Of Double))
+        gradient_amount = New Dictionary(Of String, List(Of Double))
+        penalty = New Dictionary(Of String, List(Of Double))
 
         For Each warehouse In Warehouse_inputs
             reorder_points.Add(warehouse.warehouse_id, New List(Of Double))
@@ -29,25 +29,25 @@
 
     End Sub
 
-    Public Sub add_reorder_points_and_amounts(warehouse_id As Integer, reorder_point As Double, reorder_amount As Double)
+    Public Sub add_reorder_points_and_amounts(warehouse_id As String, reorder_point As Double, reorder_amount As Double)
         reorder_points(warehouse_id).Add(reorder_point)
         reorder_amounts(warehouse_id).Add(reorder_amount)
     End Sub
 
-    Public Sub add_costs(warehouse_id As Integer, cost As Double)
+    Public Sub add_costs(warehouse_id As String, cost As Double)
         costs(warehouse_id).Add(cost)
     End Sub
 
-    Public Sub add_service_levels(warehouse_id As Integer, service_level As Double)
+    Public Sub add_service_levels(warehouse_id As String, service_level As Double)
         service_levels(warehouse_id).Add(service_level)
     End Sub
 
-    Public Sub add_gradient_points(warehouse_id As Integer, new_gradient_point As Double, new_gradient_amount As Double)
+    Public Sub add_gradient_points(warehouse_id As String, new_gradient_point As Double, new_gradient_amount As Double)
         gradient_point(warehouse_id).Add(new_gradient_point)
         gradient_amount(warehouse_id).Add(new_gradient_amount)
     End Sub
 
-    Public Sub add_penalty(warehouse_id As Integer, new_penalty As Double)
+    Public Sub add_penalty(warehouse_id As String, new_penalty As Double)
         penalty(warehouse_id).Add(new_penalty)
     End Sub
 

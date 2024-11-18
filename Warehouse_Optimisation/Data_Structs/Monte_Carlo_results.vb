@@ -16,18 +16,18 @@ Public Structure Monte_Carlo_results
 
     Dim Service_levels As List(Of List(Of Double))
     Dim Internal_service_levels As List(Of List(Of Double))
-    Dim Reorder_paths As List(Of Dictionary(Of Integer, Integer))
+    Dim Reorder_paths As List(Of Dictionary(Of String, Integer))
     Dim Storage_costs As List(Of List(Of Double))
     Dim Reorder_costs As List(Of List(Of Double))
     Dim Lost_sales_costs As List(Of List(Of Double))
     Dim Demand_totals As List(Of List(Of Integer))
-    Dim Warehouse_order As List(Of Integer)
+    Dim Warehouse_order As List(Of String)
 
 
     Public Sub New(Service_levels As List(Of List(Of Double)), Internal_service_levels As List(Of List(Of Double)),
-                   Reorder_paths As List(Of Dictionary(Of Integer, Integer)), Storage_costs As List(Of List(Of Double)),
+                   Reorder_paths As List(Of Dictionary(Of String, Integer)), Storage_costs As List(Of List(Of Double)),
                    Reorder_costs As List(Of List(Of Double)), Lost_sales_costs As List(Of List(Of Double)), demand_totals As List(Of List(Of Integer)),
-                   Warehouse_order As List(Of Integer))
+                   Warehouse_order As List(Of String))
         Me.Service_levels = Service_levels
         Me.Internal_service_levels = Internal_service_levels
         Me.Reorder_paths = Reorder_paths

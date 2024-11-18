@@ -3,7 +3,7 @@ Imports Systems.Collections.Generic
 
 Public MustInherit Class Warehouse
 
-    Public warehouse_id As Integer
+    Public warehouse_id As String
     Public sim_length As Integer
     Public period As Integer
     Public start_day_inv As Integer()
@@ -129,11 +129,11 @@ Public MustInherit Class Warehouse
     ''' <returns> 
     ''' This returns a dictionary that looks like this (Key:warehouse_id, value:How many times that warehouse was reordered from).
     ''' </returns> 
-    Public Function Calc_reorder_paths() As Dictionary(Of Integer, Integer)
-        Dim reorder_paths As New Dictionary(Of Integer, Integer)
+    Public Function Calc_reorder_paths() As Dictionary(Of String, Integer)
+        Dim reorder_paths As New Dictionary(Of String, Integer)
         For i As Integer = 0 To sim_length
             If reorder_report_history(i).is_valid = True Then
-                Dim reorder_warehouse_id As Integer = reorder_report_history(i).reordered_from
+                Dim reorder_warehouse_id As String = reorder_report_history(i).reordered_from
                 If Not reorder_paths.TryAdd(reorder_warehouse_id, 1) Then
                     reorder_paths(reorder_warehouse_id) += 1
                 End If

@@ -15,9 +15,9 @@ Public Class inputsForm
 
     Dim SKUInputs As (Integer, Double)
     Dim WarehouseAndSkuInputs As List(Of Warehouse_inputs)
-    Dim reorderInputs As List(Of (Integer, Integer, Reorder_inputs))
-    Dim WarehouseInputs As Dictionary(Of Integer, Warehouse_independent_inputs)
-    Dim WarehouseLocation As Dictionary(Of Integer, Location)
+    Dim reorderInputs As List(Of (String, String, Reorder_inputs))
+    Dim WarehouseInputs As Dictionary(Of String, Warehouse_independent_inputs)
+    Dim WarehouseLocation As Dictionary(Of String, Location)
     Dim Suggested_input_chosen As Boolean = False
     Dim NetworkID As String
     Dim SKU As String
@@ -91,13 +91,13 @@ Public Class inputsForm
     ''' and can be used by the subsequent uses. 
     ''' </summary>
     ''' <returns></returns>
-    Public Function return_inputs() As (List(Of Warehouse_inputs), List(Of (Integer, Integer, Reorder_inputs)), Dictionary(Of Integer, String))
+    Public Function return_inputs() As (List(Of Warehouse_inputs), List(Of (String, String, Reorder_inputs)), Dictionary(Of String, String))
 
-        Dim reorderRelationForReturn = New List(Of (Integer, Integer, Reorder_inputs))
-        Dim warehouseAddresses = New Dictionary(Of Integer, String)
+        Dim reorderRelationForReturn = New List(Of (String, String, Reorder_inputs))
+        Dim warehouseAddresses = New Dictionary(Of String, String)
 
         For Each reorder In Me.reorderInputs
-            If reorder.Item2 <> -1 Then
+            If reorder.Item2 <> "-1" Then
                 reorderRelationForReturn.Add(reorder)
             End If
         Next
@@ -111,9 +111,9 @@ Public Class inputsForm
 
 
 
-    Private Function databaseLoadReorderInputs(NetworkID As String) As List(Of (Integer, Integer, Reorder_inputs))
+    Private Function databaseLoadReorderInputs(NetworkID As String) As List(Of (String, String, Reorder_inputs))
 
-        Dim loadedReorderRelations = New List(Of (Integer, Integer, Reorder_inputs))
+        Dim loadedReorderRelations = New List(Of (String, String, Reorder_inputs))
 
         Dim query = "SELECT * FROM prophit.[OPT.Reorder_Relation] WHERE Network_ID = @NetworkID"
         Using conn As New SqlConnection(connectionString)
@@ -123,8 +123,8 @@ Public Class inputsForm
                     cmd.Parameters.AddWithValue("@NetworkID", NetworkID)
                     Dim reader As SqlDataReader = cmd.ExecuteReader()
                     While reader.Read()
-                        Dim warehouseID = Convert.ToInt32(reader("Warehouse_ID"))
-                        Dim reorderFromID = Convert.ToInt32(reader("Warehouse_from_ID"))
+                        Dim warehouseID = Convert.ToString(reader("Warehouse_ID"))
+                        Dim reorderFromID = Convert.ToString(reader("Warehouse_from_ID"))
                         Dim leadTimeMean = Convert.ToDouble(reader("Lead_time_mean"))
                         Dim leadTimeSD = Convert.ToDouble(reader("Lead_time_std"))
                         Dim reorderCost = Convert.ToDouble(reader("Reorder_cost"))
@@ -156,7 +156,7 @@ Public Class inputsForm
                     cmd.Parameters.AddWithValue("@SKU", SKU)
                     Dim reader As SqlDataReader = cmd.ExecuteReader()
                     While reader.Read()
-                        Dim warehouseID = Convert.ToInt32(reader("Warehouse_ID"))
+                        Dim warehouseID = Convert.ToString(reader("Warehouse_ID"))
                         Dim initialInventory = Convert.ToInt32(reader("Initial_inventory"))
                         Dim demandMean = Convert.ToDouble(reader("Demand_mean"))
                         Dim demandStd = Convert.ToDouble(reader("Demand_std"))
@@ -203,9 +203,9 @@ Public Class inputsForm
         Next
     End Sub
 
-    Private Function databaseLoadWarehouseInputs(NetworkID As String) As Dictionary(Of Integer, Warehouse_independent_inputs)
+    Private Function databaseLoadWarehouseInputs(NetworkID As String) As Dictionary(Of String, Warehouse_independent_inputs)
 
-        Dim loadedWarehouses = New Dictionary(Of Integer, Warehouse_independent_inputs)
+        Dim loadedWarehouses = New Dictionary(Of String, Warehouse_independent_inputs)
 
         Dim query = "SELECT * FROM prophit.[OPT.Warehouse] WHERE Network_ID = @NetworkID"
         Using conn As New SqlConnection(connectionString)
@@ -216,7 +216,7 @@ Public Class inputsForm
                     Dim reader As SqlDataReader = cmd.ExecuteReader()
                     While reader.Read()
 
-                        Dim warehouseID = Convert.ToInt32(reader("Warehouse_ID"))
+                        Dim warehouseID = Convert.ToString(reader("Warehouse_ID"))
                         Dim Address = reader("Address").ToString()
                         Dim HoldingCost = Convert.ToDouble(reader("Holding_cost"))
 
@@ -548,7 +548,7 @@ Public Class inputsForm
 
     ''Checks if warehouse is already in a datagrid view - assumes the WarehouseID
     ''Is in the first column
-    Private Function WarehouseInTable(WarehouseID As Integer, table As DataGridView)
+    Private Function WarehouseInTable(WarehouseID As String, table As DataGridView)
         For Each row In table.Rows
             If Not row.IsNewRow AndAlso row.Cells(0).Value IsNot Nothing Then
                 If row.Cells(0).Value = WarehouseID Then
@@ -561,7 +561,7 @@ Public Class inputsForm
 
     ''Checks if a reorder is already in the reorders Table - assues the WarehouseID and the 
     '' Reorders From ID are the first two columns of the table. 
-    Private Function ReorderInTable(WarehouseID As Integer, ReorderWarehouseID As Integer, table As DataGridView)
+    Private Function ReorderInTable(WarehouseID As String, ReorderWarehouseID As String, table As DataGridView)
         For Each row In table.Rows
             If Not row.IsNewRow AndAlso row.Cells(0).Value IsNot Nothing Then
                 If row.Cells(0).Value = WarehouseID And row.Cells(1).value = ReorderWarehouseID Then
@@ -577,7 +577,7 @@ Public Class inputsForm
     ''' warehouse inputs stage
     ''' </summary>
     ''' <returns></returns>
-    Private Function WarehouseStillExists(WarehouseID As Integer) As Boolean
+    Private Function WarehouseStillExists(WarehouseID As String) As Boolean
         For Each WarehouseIDKey In Me.WarehouseInputs.Keys()
             If WarehouseIDKey = WarehouseID Then
                 Return True
@@ -659,7 +659,7 @@ Public Class inputsForm
         For Each reorder In reorderInputs
             Dim warehouse1ID = reorder.Item1
             Dim warehouse2ID = reorder.Item2
-            If warehouse2ID <> -1 Then
+            If warehouse2ID <> "-1" Then
 
                 Dim nextreorderString = "            const reorderPoints" & warehouse1ID & "_" & warehouse2ID & " = [
                 { lat: " & WarehouseLocation(warehouse1ID).latitude & ", lng: " & WarehouseLocation(warehouse1ID).longitude & " },
@@ -714,7 +714,7 @@ Public Class inputsForm
     ''' </summary>
     Private Sub retriveWarehouseLocations()
 
-        Dim warehouseLocations = New Dictionary(Of Integer, Location)
+        Dim warehouseLocations = New Dictionary(Of String, Location)
 
         For Each warehouseID In WarehouseInputs.Keys()
             Dim APIResponce As MyResults = Nothing
@@ -761,7 +761,7 @@ Public Class inputsForm
             For Each reorder In reorderInputs
                 Dim newRow As DataGridViewRow = New DataGridViewRow()
                 newRow.CreateCells(DataGridReorders)
-                If WarehouseStillExists(reorder.Item1) And (WarehouseStillExists(reorder.Item2) Or reorder.Item2 = -1) Then
+                If WarehouseStillExists(reorder.Item1) And (WarehouseStillExists(reorder.Item2) Or reorder.Item2 = "-1") Then
                     If Not ReorderInTable(reorder.Item1, reorder.Item2, DataGridReorders) Then
                         newRow.Cells(0).Value = reorder.Item1
                         newRow.Cells(1).Value = reorder.Item2
@@ -814,15 +814,15 @@ Public Class inputsForm
                     Dim selectedSiteType As String = row.Cells("Site_type").Value.ToString()
                     Dim siteType As SiteType
                     If selectedSiteType = "Base Warehouse" Then
-                        siteType = SiteType.Base_Warehouse
+                        siteType = siteType.Base_Warehouse
                     ElseIf selectedSiteType = "Dependent Warehouse" Then
-                        siteType = SiteType.Dependent_Warehouse
+                        siteType = siteType.Dependent_Warehouse
                     Else
-                        siteType = SiteType.Dependent_Warehouse ''This is useless now, however is good to have a default case if this if statement is expanded
+                        siteType = siteType.Dependent_Warehouse ''This is useless now, however is good to have a default case if this if statement is expanded
                     End If
 
                     Dim warehouseInput As New Warehouse_inputs(
-                        warehouse_id:=Convert.ToInt32(row.Cells("Warehouse_ID").Value),
+                        warehouse_id:=Convert.ToString(row.Cells("Warehouse_ID").Value),
                         initial_inventory:=Convert.ToInt32(row.Cells("Initial_inventory").Value),
                         demand_mean:=Convert.ToDouble(row.Cells("Demand_mean").Value),
                         demand_sd:=Convert.ToDouble(row.Cells("Demand_std_dev").Value),
@@ -854,7 +854,7 @@ Public Class inputsForm
 
     Private Function validateReorderInputs() As Boolean
         Try
-            Me.reorderInputs = New List(Of (Integer, Integer, Reorder_inputs))
+            Me.reorderInputs = New List(Of (String, String, Reorder_inputs))
             For Each row In DataGridReorders.Rows
                 If Not row.IsNewRow Then
                     add_reorder_relationships(row)
@@ -878,14 +878,14 @@ Public Class inputsForm
     ''' <param name="warehouseID"> The Warehouse ID of the warehouse you are checking as a reorder</param>
     ''' <param name="isBase"> whether the warehouse you are checking is a base warehouse or not</param>
     ''' <returns></returns>
-    Private Function reorderPartnerExists(warehouseID As Integer, isBase As Boolean) As Boolean
+    Private Function reorderPartnerExists(warehouseID As String, isBase As Boolean) As Boolean
         For Each reorder In reorderInputs
             If reorder.Item1 = warehouseID Then
 
                 '''checks that only base warehouses have the reorder from set to -1
-                If isBase And reorder.Item2 <> -1 Then
+                If isBase And reorder.Item2 <> "-1" Then
                     Return False
-                ElseIf Not isBase And reorder.Item2 = -1 Then
+                ElseIf Not isBase And reorder.Item2 = "-1" Then
                     Return False
                 End If
 
@@ -900,7 +900,7 @@ Public Class inputsForm
     ''' </summary>
     ''' <param name="warehouseIDToCheck"> TheID of the warehouse to check</param>
     ''' <returns></returns>
-    Private Function checkBaseWarehouseExists(warehouseIDToCheck As Integer) As Boolean
+    Private Function checkBaseWarehouseExists(warehouseIDToCheck As String) As Boolean
         For Each warehouseID In Me.WarehouseInputs.Keys()
             If Me.WarehouseInputs(warehouseID).Warehouse_SiteType = SiteType.Base_Warehouse And warehouseIDToCheck = warehouseID Then
                 Return True
@@ -916,7 +916,7 @@ Public Class inputsForm
     ''' <param name="warehouseIDToCheck"> The ID of the warehouse to check</param>
     ''' <param name="reorderFromWarehouseID"> The ID of the warehouse that the warehouse to check reorders from</param>
     ''' <returns></returns>
-    Private Function checkWarehousesExist(warehouseIDToCheck As Integer, reorderFromWarehouseID As Integer) As Boolean
+    Private Function checkWarehousesExist(warehouseIDToCheck As String, reorderFromWarehouseID As String) As Boolean
         Dim warehouse1Exists As Boolean = False
         Dim warehouse2Exists As Boolean = False
 
@@ -956,7 +956,7 @@ Public Class inputsForm
         '''This part checks that all reorder Inputs themselves make sense
         For Each reorder In Me.reorderInputs
             Dim allReorderInputsValid As Boolean = False
-            If reorder.Item2 = -1 Then
+            If reorder.Item2 = "-1" Then
                 allReorderInputsValid = checkBaseWarehouseExists(reorder.Item1)
 
             Else
@@ -974,8 +974,8 @@ Public Class inputsForm
     End Function
 
     Private Sub add_reorder_relationships(row As Object)
-        Dim warehouse_id = Convert.ToInt32(row.Cells("Reorder_warehouse_ID").Value)
-        Dim reordered_from_id = Convert.ToInt32(row.Cells("Reordered_from").Value)
+        Dim warehouse_id = Convert.ToString(row.Cells("Reorder_warehouse_ID").Value)
+        Dim reordered_from_id = Convert.ToString(row.Cells("Reordered_from").Value)
 
         Dim reorderInput As New Reorder_inputs(
              lead_time_mean:=Convert.ToDouble(row.Cells("lead_time_mean").Value),
@@ -1041,11 +1041,11 @@ Public Class inputsForm
     End Sub
 
     Private Sub SubmitWarehouseBtn_Click(sender As Object, e As EventArgs) Handles SubmitWarehouseBtn.Click
-        Dim WarehouseId As Integer
+        Dim WarehouseId As String
         Dim HoldingCost As Double
         Dim WarehouseType As String
         Try
-            WarehouseId = Convert.ToInt32(WarehouseIDTextBox.Text)
+            WarehouseId = Convert.ToString(WarehouseIDTextBox.Text)
             HoldingCost = Convert.ToDouble(HoldingCostTextBox.Text)
             If DependentWarehouseRadioButton.Checked = False And BaseWarehouseRadioButton.Checked = False Then
                 MessageBox.Show("Please select a warehouse type")
@@ -1085,7 +1085,7 @@ Public Class inputsForm
 
     End Sub
 
-    Private Function IdInLocationBox(WarehouseID As Integer) As Boolean
+    Private Function IdInLocationBox(WarehouseID As String) As Boolean
         For Each row In WarehouseDataGrid.Rows()
             If row.Cells(0).Value = WarehouseID Then
                 Return True
@@ -1108,11 +1108,11 @@ Public Class inputsForm
 
 
     Private Sub UpdateWarehouseInputs()
-        Dim newWarehouseData = New Dictionary(Of Integer, Warehouse_independent_inputs)
+        Dim newWarehouseData = New Dictionary(Of String, Warehouse_independent_inputs)
 
         For Each row In WarehouseDataGrid.Rows()
             If Not row.IsNewRow Then
-                Dim warehouse_id = Convert.ToInt32(row.Cells(0).Value)
+                Dim warehouse_id = Convert.ToString(row.Cells(0).Value)
                 Dim holding_cost = Convert.ToDouble(row.Cells(1).Value)
                 Dim site_type = If(row.Cells(2).Value = "Base", SiteType.Base_Warehouse, SiteType.Dependent_Warehouse)
                 Dim address = row.Cells(3).Value.ToString()

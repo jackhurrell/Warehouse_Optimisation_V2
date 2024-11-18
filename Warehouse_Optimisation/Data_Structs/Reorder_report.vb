@@ -10,9 +10,9 @@
 
 
 Public Structure Reorder_report
-    Public warehouse_id As Integer
+    Public warehouse_id As String
     Public reorder_day As Integer
-    Public reordered_from As Integer 'This is the warehouse id of the other warehosue
+    Public reordered_from As String 'This is the warehouse id of the other warehosue
     Public current_inventory As Integer
     Public distributor_inventory As Integer
     Public reorder_amount As Integer
@@ -20,8 +20,8 @@ Public Structure Reorder_report
     Public lead_time As Integer
     Public is_valid As Integer 'This exists to tell if the report is valid or just empty
 
-    Public Sub New(warehouse_id As Integer, reorder_day As Integer,
-                   reordered_from As Integer, current_inventory As Integer,
+    Public Sub New(warehouse_id As String, reorder_day As Integer,
+                   reordered_from As String, current_inventory As Integer,
                    distributor_inventory As Integer, reorder_amount As Integer,
                    reorder_cost As Double, lead_time As Integer, is_valid As Integer)
         Me.warehouse_id = warehouse_id

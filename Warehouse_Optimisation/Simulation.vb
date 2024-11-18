@@ -2,8 +2,8 @@ Public Class Simulation
 
 
     Public list_of_warehouses As List(Of Warehouse)
-    Public dictionary_of_warehouses As Dictionary(Of Integer, Warehouse)
-    Public reorder_order As List(Of Integer)
+    Public dictionary_of_warehouses As Dictionary(Of String, Warehouse)
+    Public reorder_order As List(Of String)
     Public sim_length As Integer
     Public current_day As Integer
     ''' <summary>
@@ -17,14 +17,14 @@ Public Class Simulation
     ''' This constructor initializes the simulation by setting up the list and dictionary of warehouses based on the provided inputs.
     ''' It also establishes relationships between warehouses as specified in the warehouse relationships list.
     ''' </remarks>
-    Public Sub New(list_of_warehouse_inputs As List(Of Warehouse_inputs), sim_length As Integer, reorder_order As List(Of Integer), warehouse_relationships As List(Of (Integer, Integer, Reorder_inputs)))
+    Public Sub New(list_of_warehouse_inputs As List(Of Warehouse_inputs), sim_length As Integer, reorder_order As List(Of String), warehouse_relationships As List(Of (String, String, Reorder_inputs)))
         Me.sim_length = sim_length
         Me.current_day = 0
 
         Me.reorder_order = reorder_order
 
         list_of_warehouses = New List(Of Warehouse)
-        dictionary_of_warehouses = New Dictionary(Of Integer, Warehouse)
+        dictionary_of_warehouses = New Dictionary(Of String, Warehouse)
 
         For Each warehouse_input In list_of_warehouse_inputs
             If warehouse_input.site_type = SiteType.Base_Warehouse Then
@@ -70,7 +70,7 @@ Public Class Simulation
 
         Dim service_levels = New List(Of Double)
         Dim internal_service_levels = New List(Of Double)
-        Dim reorder_paths = New List(Of Dictionary(Of Integer, Integer))
+        Dim reorder_paths = New List(Of Dictionary(Of String, Integer))
         Dim storage_costs = New List(Of Double)
         Dim reorder_costs = New List(Of Double)
         Dim lost_sales_costs = New List(Of Double)
@@ -99,7 +99,7 @@ Public Class Simulation
     ''' identified by a unique ID.
     ''' </summary>
     ''' <returns>A list of warehouse IDs in the order they were added to the simulation.</returns>
-    Function return_warehouse_order() As List(Of Integer)
+    Function return_warehouse_order() As List(Of String)
         Return list_of_warehouses.Select(Function(Warehouse) Warehouse.warehouse_id).ToList()
     End Function
 

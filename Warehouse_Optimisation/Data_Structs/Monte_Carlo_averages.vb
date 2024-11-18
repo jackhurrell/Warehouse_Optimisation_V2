@@ -16,9 +16,9 @@ Public Class Monte_carlo_averages
     Public Storage_costs As (List(Of Double), Integer)
     Public Reorder_costs As (List(Of Double), Integer)
     Public Lost_sales_costs As (List(Of Double), Integer)
-    Public Warehouse_order As List(Of Integer)
+    Public Warehouse_order As List(Of String)
 
-    Public Sub New(service_levels As (List(Of Double), Integer), internal_service_levels As (List(Of Double), Integer), storage_costs As (List(Of Double), Integer), reorder_costs As (List(Of Double), Integer), lost_sales_costs As (List(Of Double), Integer), warehouse_order As List(Of Integer))
+    Public Sub New(service_levels As (List(Of Double), Integer), internal_service_levels As (List(Of Double), Integer), storage_costs As (List(Of Double), Integer), reorder_costs As (List(Of Double), Integer), lost_sales_costs As (List(Of Double), Integer), warehouse_order As List(Of String))
         Me.Service_levels = service_levels
         Me.Internal_service_levels = internal_service_levels
         Me.Storage_costs = storage_costs

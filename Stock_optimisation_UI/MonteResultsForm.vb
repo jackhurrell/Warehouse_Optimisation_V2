@@ -273,7 +273,7 @@ Public Class MonteResultsForm
         ServiceLevelChart.ChartAreas.Add(chartArea)
 
         '''This exists more for when the warehouse_ID is a string
-        Dim name_to_position = New Dictionary(Of Integer, Integer)
+        Dim name_to_position = New Dictionary(Of String, Integer)
         For i As Integer = 0 To warehouse_IDs.Count - 1
             name_to_position.Add(warehouse_IDs(i), i + 1)
         Next

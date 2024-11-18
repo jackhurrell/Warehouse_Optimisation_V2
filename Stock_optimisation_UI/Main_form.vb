@@ -14,8 +14,8 @@ Public Class Main_form
     Const TotalDaysSimulated = 1000000
 
     Dim WarehouseInputs As List(Of Warehouse_inputs)
-    Dim ReorderRelations As List(Of (Integer, Integer, Reorder_inputs))
-    Dim WarehouseLocations As Dictionary(Of Integer, String)
+    Dim ReorderRelations As List(Of (String, String, Reorder_inputs))
+    Dim WarehouseLocations As Dictionary(Of String, String)
 
 
     Private Sub Main_form_Load(sender As Object, e As EventArgs) Handles MyBase.Load
@@ -191,10 +191,10 @@ Public Class Main_form
             End Try
         End If
 
-        Dim requiredServiceLevels As Dictionary(Of Integer, Double) = Nothing
+        Dim requiredServiceLevels As Dictionary(Of String, Double) = Nothing
 
         If OptimisationType = OptimisedFor.CostWithPenalty Or OptimisationType = OptimisedFor.CostsWithPenaltyAndLostSales Then
-            Dim ListOfWarehouseIDs = New List(Of Integer)
+            Dim ListOfWarehouseIDs = New List(Of String)
 
             For Each warehouse In WarehouseInputs
                 If warehouse.demand_mean <> 0 Then
@@ -221,14 +221,14 @@ Public Class Main_form
         ''Works out which box is checked
         If TwoVarRadioButton.Checked Then
 
-            StockWizardIterationInputs.Add(New Stock_wizard_iteration_inputs(4, 250, 365, 50, 35, delta_point:=0.1, delta_amount:=0.1, base_penalty:=350, annealing:=True))
-            StockWizardIterationInputs.Add(New Stock_wizard_iteration_inputs(3, 250, 365, 25, 20, delta_point:=0.05, delta_amount:=0.05, base_penalty:=700, annealing:=True))
-            StockWizardIterationInputs.Add(New Stock_wizard_iteration_inputs(2, 300, 365, 25, 30, num_var_to_optimise:=1, base_penalty:=1400, annealing:=True))
+            StockWizardIterationInputs.Add(New Stock_wizard_iteration_inputs(40, 250, 365, 50, 35, delta_point:=0.1, delta_amount:=0.1, base_penalty:=350, annealing:=True))
+            StockWizardIterationInputs.Add(New Stock_wizard_iteration_inputs(30, 250, 365, 25, 20, delta_point:=0.05, delta_amount:=0.05, base_penalty:=700, annealing:=True))
+            StockWizardIterationInputs.Add(New Stock_wizard_iteration_inputs(20, 300, 365, 25, 30, num_var_to_optimise:=1, base_penalty:=1400, annealing:=True))
 
         ElseIf OneVarRadioButton.Checked Then
-            StockWizardIterationInputs.Add(New Stock_wizard_iteration_inputs(4, 250, 365, 50, 35, num_var_to_optimise:=1, delta_point:=0.8, delta_amount:=0.8, base_penalty:=350, annealing:=True))
-            StockWizardIterationInputs.Add(New Stock_wizard_iteration_inputs(4, 350, 365, 50, 35, num_var_to_optimise:=1, delta_point:=0.3, delta_amount:=0.3, base_penalty:=500, annealing:=True))
-            StockWizardIterationInputs.Add(New Stock_wizard_iteration_inputs(4, 350, 365, 50, 35, num_var_to_optimise:=1, delta_point:=0.2, delta_amount:=0.2, base_penalty:=650, annealing:=True))
+            StockWizardIterationInputs.Add(New Stock_wizard_iteration_inputs(40, 250, 365, 50, 35, num_var_to_optimise:=1, delta_point:=0.8, delta_amount:=0.8, base_penalty:=350, annealing:=True))
+            StockWizardIterationInputs.Add(New Stock_wizard_iteration_inputs(40, 350, 365, 50, 35, num_var_to_optimise:=1, delta_point:=0.3, delta_amount:=0.3, base_penalty:=500, annealing:=True))
+            StockWizardIterationInputs.Add(New Stock_wizard_iteration_inputs(40, 350, 365, 50, 35, num_var_to_optimise:=1, delta_point:=0.2, delta_amount:=0.2, base_penalty:=650, annealing:=True))
         Else
             MessageBox.Show("Please Choose which values to Optimise for")
             Exit Sub

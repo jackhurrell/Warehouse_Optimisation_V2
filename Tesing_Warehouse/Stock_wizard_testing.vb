@@ -14,7 +14,7 @@ Public Class Stock_wizard_tesing
         Dim reorder_inputs_1 = (2, 1, New Reorder_inputs(6, 1, 200))
         Dim reorder_inputs_2 = (3, 1, New Reorder_inputs(5, 1, 100))
         Dim reorder_inputs_3 = (3, 2, New Reorder_inputs(3, 2, 200))
-        Dim reorder_inputs_list = New List(Of (Integer, Integer, Reorder_inputs)) From {reorder_inputs_1, reorder_inputs_2, reorder_inputs_3}
+        Dim reorder_inputs_list = New List(Of (String, String, Reorder_inputs)) From {reorder_inputs_1, reorder_inputs_2, reorder_inputs_3}
 
         '''These are the inpus that control the acctually paramaters of the stock wizard model
         Dim stock_wizard_inputs_round_1 = New Stock_wizard_iteration_inputs(40, 250, 200, 50, 35, delta_point:=0.1, delta_amount:=0.1, base_penalty:=350)
@@ -27,7 +27,7 @@ Public Class Stock_wizard_tesing
             stock_wizard_inputs_round_4}
 
         Dim test_stock_wizard = New Stock_Wizard(warehouse_list, reorder_inputs_list, logging:=True)
-        test_stock_wizard.Run_stock_wizard(3, test_iteration_params)
+        test_stock_wizard.Run_stock_wizard(test_iteration_params)
         Dim plotting_points = test_stock_wizard.logging_points
         plotting_points.pad_logging_vals()
         plotting_points.print_outputs()
@@ -46,7 +46,7 @@ Public Class Stock_wizard_tesing
     Public Sub test_one_warehouse()
 
         Dim Warehouse_inputs = New Warehouse_inputs(2, 16000, 1000, 700, 12000, 13, 4, 2, SiteType.Base_Warehouse, 20, 200, 2000, 200)
-        Dim reorder_inputs_list = New List(Of (Integer, Integer, Reorder_inputs)) From {}
+        Dim reorder_inputs_list = New List(Of (String, String, Reorder_inputs)) From {}
 
         Dim warehouse_list = New List(Of Warehouse_inputs) From {Warehouse_inputs}
 
@@ -67,7 +67,7 @@ Public Class Stock_wizard_tesing
 
 
         Dim test_stock_wizard = New Stock_Wizard(warehouse_list, reorder_inputs_list, logging:=True)
-        Dim recomended_stock_levels = test_stock_wizard.Run_stock_wizard(3, test_iteration_params)
+        Dim recomended_stock_levels = test_stock_wizard.Run_stock_wizard(test_iteration_params)
 
         Dim logging_results As Stock_wizard_logging = test_stock_wizard.logging_points
         logging_results.pad_logging_vals()
@@ -85,7 +85,7 @@ Public Class Stock_wizard_tesing
 
 
         Dim Warehouse_inputs = New Warehouse_inputs(2, 16000, 1000, 700, 13000, 8, 4, 2, SiteType.Base_Warehouse, 20, 200, 2000, 200)
-        Dim reorder_inputs_list = New List(Of (Integer, Integer, Reorder_inputs)) From {}
+        Dim reorder_inputs_list = New List(Of (String, String, Reorder_inputs)) From {}
         Dim warehouse_list = New List(Of Warehouse_inputs) From {Warehouse_inputs}
         Dim test_group = New Warehouse_Group(warehouse_list, reorder_inputs_list)
         Dim points_recorder = New Stock_wizard_logging(warehouse_list)

@@ -15,14 +15,14 @@ Public Structure Simulation_result
 
     Public service_levels As List(Of Double)
     Public internal_service_levels As List(Of Double)
-    Public reorder_paths As List(Of Dictionary(Of Integer, Integer))
+    Public reorder_paths As List(Of Dictionary(Of String, Integer))
     Public storage_costs As List(Of Double)
     Public reorder_costs As List(Of Double)
     Public lost_sales_costs As List(Of Double)
     Public Demand_totals As List(Of Integer)
 
     Public Sub New(service_levels As List(Of Double), internal_service_levels As List(Of Double),
-                   reorder_paths As List(Of Dictionary(Of Integer, Integer)), storage_costs As List(Of Double),
+                   reorder_paths As List(Of Dictionary(Of String, Integer)), storage_costs As List(Of Double),
                    reorder_costs As List(Of Double), lost_sales_costs As List(Of Double), Demand_totals As List(Of Integer))
         Me.service_levels = service_levels
         Me.internal_service_levels = internal_service_levels
